@@ -39,7 +39,7 @@ class AICLib(object):
             self.conn = urllib3.connection_from_url(uri)
         else:
             self.conn = poolManager.connection_from_url(uri)
-        self.connection = AICLibConnection(uri, connection=self.conn,
+        self.connection = AICLibConnection(connection=self.conn,
                                            username=username,
                                            password=password)
        
@@ -68,10 +68,15 @@ class AICLib(object):
             return
         logger.info("(%s @ %s): %s" % (method, resource, 
                                        aic_entity._unroll()))
-        request = self.connection.request(method, resource,
+        r = self.connection.request(method, resource,
                                           body = aic_entity._unroll())
-        logger.info("Data: %s" % request.data)
-        return request
+        if r.getheader('content-length') > 0:
+            if r.getheader('content-type') == 'application/json':
+                jsonReturn = json.loads(r.data)
+                return jsonReturn
+            else:
+                return r.data
+        return None
 
 
 
@@ -104,7 +109,8 @@ class NVPFunction(AICEntity):
 
 
     def get_method_uris(self):
-        return super(NVPFunction, self)._action('GET', common.apimap('getMethodURIs'))
+        return super(NVPFunction, self)._action('GET', 
+                                                common.apimap('getMethodURIs'))
 
 
     def read_method(self, method_name):

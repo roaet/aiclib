@@ -36,10 +36,9 @@ class AICLibConnection(object):
     _encode_body_methods = set(['PATCH', 'POST', 'PUT', 'TRACE'])
     
 
-    def __init__(self, resourceURI, username='admin', password='admin',
+    def __init__(self, username='admin', password='admin',
                  connection=None):
         logger.info("Creating AICLibConnection")
-        self.resourceURI = resourceURI
         self._conn = connection
         self.authenticated = False
         self.username = username
@@ -84,19 +83,18 @@ class AICLibConnection(object):
         return self._headers
         
 
-    def request(self, method, apiCall, generationNumber=0, body=None):
+    def request(self, method, apicall, generationNumber=0, body=None):
         retryPause = 0
         r = None
         for retryCount in xrange(self.maxRetries):
             self.generationNumber = generationNumber
             jsonBody = json.dumps(body)
-            logger.info("REQ: %s" % jsonBody)
             if method in self._encode_url_methods:
-                r = self.connection.request_encode_url(method, apiCall,
+                r = self.connection.request_encode_url(method, apicall,
                                                        fields=None,
                                                        headers=self.headers)
             else:
-                r = self.connection.urlopen(method, apiCall,
+                r = self.connection.urlopen(method, apicall,
                                             jsonBody,
                                             headers=self.headers)
                                             
