@@ -15,6 +15,8 @@ _apimap = {
     'getMethodURIs' : 'doc/method',
     'manual' : 'doc/reference',
     'controlCluster' : 'control-cluster',
+    # switch commands
+    'lswitch' : 'lswitch',
 }
 
 
