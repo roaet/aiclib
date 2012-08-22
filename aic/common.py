@@ -1,8 +1,8 @@
-'''
+"""
 Created on August 21, 2012
 
 @author: Justin Hammond, Rackspace Hosting
-'''
+"""
 
 _version = 'ws.v1'
 

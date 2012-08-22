@@ -1,8 +1,8 @@
-'''
+"""
 Created on August 22, 2012
 
 @author: Justin Hammond, Rackspace Hosting
-'''
+"""
 
 import json
 import logging
@@ -50,18 +50,22 @@ class NVPEntityQuery(NVPBaseQuery):
         return self
 
     def alert(self, flag):
+        self.query['alert'] = 'true' if flag else 'false'
         return self
 
-    def alert_changed(self, flag):
+    def alert_changed_since(self, date):
         return self
 
     def display_name(self, name):
+        self.query['display_name'] = name
         return self
 
     def identifier(self, ident):
+        self.query['identifier'] = ident
         return self
 
-    def lastmodified(self, mod):
+    def last_modified(self, date):
+
         return self
 
     def tags(self, taglist):
@@ -71,18 +75,22 @@ class NVPEntityQuery(NVPBaseQuery):
         return self
 
     def uuid(self, uid):
+        self.query['uuid'] = uid
         return self
 
 
 class LSwitchQuery(NVPEntityQuery):
 
     def port_isolation(self, flag):
+        self.query['port_isolation'] = 'true' if flag else 'false'
         return self
 
     def transport_zone_name(self, name):
+        self.query['transport_zone_name'] = name
         return self
 
     def transport_zone_uuid(self, uid):
+        self.query['transport_zone_uuid'] = uid
         return self
 
     def results(self):
