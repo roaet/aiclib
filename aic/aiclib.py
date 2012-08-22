@@ -53,8 +53,8 @@ class AICLib(object):
         return aic_entity
 
 
-    def lswitch(self):
-        aic_entity = LSwitch(self)
+    def lswitch(self, uuid=None):
+        aic_entity = LSwitch(self, uuid=uuid)
         return aic_entity
 
 
@@ -70,7 +70,11 @@ class AICLib(object):
                                        aic_entity._unroll()))
         r = self.connection.request(method, resource,
                                           body = aic_entity._unroll())
-        if r.getheader('content-length') > 0:
+        logger.info("Response headers: %s" % r.headers)
+        responseLength = 0
+        if 'content-length' in r.headers:
+            responseLength = int(r.getheader('content-length'))
+        if responseLength > 0:
             if r.getheader('content-type') == 'application/json':
                 jsonReturn = json.loads(r.data)
                 return jsonReturn
@@ -158,8 +162,9 @@ class NVPEntity(AICEntity):
 class LSwitch(NVPEntity):
 
 
-    def __init__(self, aic_connection):
+    def __init__(self, aic_connection, uuid=None):
         super(LSwitch, self).__init__(aic_connection)
+        self.uuid = uuid
 
 
     def port_isolation_enabled(self, enabled):
@@ -178,6 +183,38 @@ class LSwitch(NVPEntity):
 
     def create(self):
         return super(LSwitch, self)._action('POST', common.apimap('lswitch'))
+
+
+    def delete(self):
+        if not self.uuid:
+            logger.info("Attempted to delete without UUID: failing")
+            return None
+        uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
+        return super(LSwitch, self)._action('DELETE', uri)
+
+
+    def status(self):
+        if not self.uuid:
+            logger.info("Attempted to check status without UUID: failing")
+            return None
+        uri = "%s/%s/status" % (common.apimap('lswitch'), self.uuid)
+        return super(LSwitch, self)._action('GET', uri)
+
+
+    def read(self):
+        if not self.uuid:
+            logger.info("Attempted to read config without UUID: failing")
+            return None
+        uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
+        return super(LSwitch, self)._action('GET', uri)
+
+
+    def update(self):
+        if not self.uuid:
+            logger.info("Attempted to update config without UUID: failing")
+            return None
+        uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
+        return super(LSwitch, self)._action('PUT', uri)
 
 
 class LSwitchPort(NVPEntity):
