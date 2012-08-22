@@ -11,8 +11,8 @@ import urllib3
 
 import common
 from aic.aiclibconnection import AICLibConnection
-import aic.nvpentity as nvpentity
-import aic.nvpquery as nvpquery
+import nvpentity
+import nvpquery
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

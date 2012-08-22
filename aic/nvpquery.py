@@ -8,7 +8,7 @@ import json
 import logging
 
 from aic.aiccore import AICQuery
-import aic.common as common
+import common
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -34,6 +34,11 @@ class NVPBaseQuery(AICQuery):
         self.query['fields'] = ','.join(fieldlist)
         return self
 
+    def results(self):
+        print "dog"
+        results = super(NVPEntityQuery, self)._query('GET')
+        return results
+
     
 class NVPEntityQuery(NVPBaseQuery):
 
@@ -41,9 +46,7 @@ class NVPEntityQuery(NVPBaseQuery):
         super(NVPEntityQuery, self).__init__(aic_connection, resource)
         logger.info("Created NVPEntityQuery")
         self.query['_page_length'] = 1000
-
-    def page(self, page):
-        return self
+        self.nextpage = None
 
     def length(self, page):
         self.query['_page_length'] = page
@@ -78,6 +81,20 @@ class NVPEntityQuery(NVPBaseQuery):
         self.query['uuid'] = uid
         return self
 
+    def next(self):
+        if not self.nextpage:
+            return None
+        self.query['_page_cursor'] = self.nextpage
+        return self.results()
+
+    def results(self):
+        results = super(NVPEntityQuery, self).results()
+        if type(results) is dict and 'page_cursor' in results:
+            self.nextpage = results['page_cursor']
+        else:
+            self.nextpage = None
+        return results
+
 
 class LSwitchQuery(NVPEntityQuery):
 
@@ -94,5 +111,5 @@ class LSwitchQuery(NVPEntityQuery):
         return self
 
     def results(self):
-        return super(LSwitchQuery, self)._query('GET')
+        return super(LSwitchQuery, self).results()
 

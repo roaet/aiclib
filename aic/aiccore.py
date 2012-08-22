@@ -7,7 +7,7 @@ Created on August 22, 2012
 import json
 import logging
 
-import aic.common as common
+import common
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

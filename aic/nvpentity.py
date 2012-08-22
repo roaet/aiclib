@@ -8,8 +8,8 @@ import json
 import logging
 
 from aic.aiccore import AICEntity
-import aic.common as common
-import aic.nvpquery as nvpquery
+import common
+import nvpquery
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
