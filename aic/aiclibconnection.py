@@ -1,8 +1,8 @@
-'''
+"""
 Created on August 17, 2012
 
 @author: Justin Hammond, Rackspace Hosting
-'''
+"""
 
 import json
 import logging
@@ -32,9 +32,7 @@ logger.addHandler(ch)
 
 class AICLibConnection(object):
     _encode_url_methods = set(['DELETE', 'GET', 'HEAD', 'OPTIONS'])
-
     _encode_body_methods = set(['PATCH', 'POST', 'PUT', 'TRACE'])
-    
 
     def __init__(self, username='admin', password='admin',
                  connection=None):
@@ -48,7 +46,6 @@ class AICLibConnection(object):
         self.generationNumber = 0
         self.authkey = ''
 
-
     @property
     def connection(self):
         if(not self.authenticated and 
@@ -56,7 +53,6 @@ class AICLibConnection(object):
                 logger.error("Authorization failed.")
                 raise IOError('401','Unauthorized')
         return self._conn
-
 
     def _login(self, username, password):
         fields = { 'username' : username, 'password' : password }
@@ -71,7 +67,6 @@ class AICLibConnection(object):
             logger.info("Authorized (%s)" % (self.authkey))
         self.authenticated = True
         return True
-
     
     @property
     def headers(self):
@@ -81,7 +76,6 @@ class AICLibConnection(object):
             'X-Nvp-Wait-For-Config-Generation': self.generationNumber,
         }
         return self._headers
-        
 
     def request(self, method, apicall, generationNumber=0, body=None):
         retryPause = 0
@@ -91,7 +85,7 @@ class AICLibConnection(object):
             jsonBody = json.dumps(body)
             if method in self._encode_url_methods:
                 r = self.connection.request_encode_url(method, apicall,
-                                                       fields=None,
+                                                       fields=body,
                                                        headers=self.headers)
             else:
                 r = self.connection.urlopen(method, apicall,
@@ -114,10 +108,8 @@ class AICLibConnection(object):
             return r
         raise MaxRetryError('408','Maxed retry attempts')
 
-
     def _handle_headers(self, resp):
-        logger.info("HEADERS: ", resp.headers)
-
+        return
 
     def _iserror(self, resp):
         errorCheck = resp.status - 200
@@ -125,7 +117,6 @@ class AICLibConnection(object):
             return True
         logger.info("Request success %s (%s)" % (resp.status, resp.reason))
         return False
-
 
     def _handle_error(self, resp):
         logger.info("Received error %s (%s)" % (resp.status, resp.reason))

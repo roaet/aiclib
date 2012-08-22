@@ -12,7 +12,7 @@ import urllib3
 import common
 from aic.aiclibconnection import AICLibConnection
 import aic.nvpentity as nvpentity
-import aic.nvpquery
+import aic.nvpquery as nvpquery
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -29,7 +29,6 @@ logger.addHandler(ch)
 
 class AICLib(object):
 
-
     def __init__(self, uri, poolManager=None, username='admin', 
                  password='admin'):
         '''
@@ -43,26 +42,21 @@ class AICLib(object):
         self.connection = AICLibConnection(connection=self.conn,
                                            username=username,
                                            password=password)
-       
 
     def identity(self):
         return self
-
 
     def nvp_function(self):
         aic_entity = nvpentity.NVPFunction(self)
         return aic_entity
 
-
     def lswitch(self, uuid=None):
         aic_entity = nvpentity.LSwitch(self, uuid=uuid)
         return aic_entity
 
-
     def lswitch_port(self):
         aic_entity = nvpentity.LSwitchPort(self)
         return aic_entity
-
 
     def _action(self, aic_entity, method, resource):
         if not aic_entity:

@@ -24,16 +24,13 @@ logger.addHandler(ch)
 
 class AICEntity(object):
 
-
     def __init__(self, aic_connection):
         logger.info("Created AICEntity")
         self.aic_connection = aic_connection
         self.info = {}
 
-
     def _action(self, method, resource):
         return self.aic_connection._action(self, method, resource)
-
 
     def _unroll(self):
         return self.info
@@ -41,17 +38,15 @@ class AICEntity(object):
 
 class AICQuery(object):
 
-
-    def __init__(self, aic_connection):
+    def __init__(self, aic_connection, resource):
         logger.info("Created AICQuery")
         self.aic_connection = aic_connection
         self.query = {}
+        self.resource = resource
 
-
-    def _query(self, method, resource):
-        return self.aic_connection._action(self, method, resource)
-
+    def _query(self, method):
+        return self.aic_connection._action(self, method, self.resource)
 
     def _unroll(self):
-        return self.info
+        return self.query
 
