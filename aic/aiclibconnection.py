@@ -125,6 +125,7 @@ class AICLibConnection(object):
         errorCheck = resp.status - 200
         if errorCheck >= 100:
             return True
+        logger.info("Request success %s (%s)" % (resp.status, resp.reason))
         return False
 
 

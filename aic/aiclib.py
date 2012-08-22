@@ -70,7 +70,8 @@ class AICLib(object):
                                        aic_entity._unroll()))
         request = self.connection.request(method, resource,
                                           body = aic_entity._unroll())
-        print request.data
+        logger.info("Data: %s" % request.data)
+        return request
 
 
 
@@ -83,7 +84,7 @@ class AICEntity(object):
         self.info = {}
 
     def _action(self, method, resource):
-        self.aic_connection._action(self, method, resource)
+        return self.aic_connection._action(self, method, resource)
 
 
     def _unroll(self):
@@ -99,25 +100,25 @@ class NVPFunction(AICEntity):
 
 
     def logout(self):
-        super(NVPFunction, self)._action('GET', common.apimap('logout'))
+        return super(NVPFunction, self)._action('GET', common.apimap('logout'))
 
 
     def get_method_uris(self):
-        super(NVPFunction, self)._action('GET', common.apimap('getMethodURIs'))
+        return super(NVPFunction, self)._action('GET', common.apimap('getMethodURIs'))
 
 
     def read_method(self, method_name):
         uri = "%s/%s" % (common.apimap('readMethod'), method_name)
-        super(NVPFunction, self)._action('GET', uri)
+        return super(NVPFunction, self)._action('GET', uri)
 
 
     def get_schemas(self):
-        super(NVPFunction, self)._action('GET', common.apimap('schema'))
+        return super(NVPFunction, self)._action('GET', common.apimap('schema'))
 
 
     def read_schema(self, schema_name):
         uri = "%s/%s" % (common.apimap('readSchema'), schema_name)
-        super(NVPFunction, self)._action('GET', uri)
+        return super(NVPFunction, self)._action('GET', uri)
 
 
 class NVPEntity(AICEntity):
@@ -160,13 +161,17 @@ class LSwitch(NVPEntity):
         return self
 
 
+    def transport_zones(self, zones):
+        return self
+
+
     def _unroll(self):
         super(LSwitch, self)._unroll()
         return self.info
 
 
     def create(self):
-        super(LSwitch, self)._action('POST', common.apimap('lswitch'))
+        return super(LSwitch, self)._action('POST', common.apimap('lswitch'))
 
 
 class LSwitchPort(NVPEntity):
