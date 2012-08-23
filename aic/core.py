@@ -35,10 +35,10 @@ class CoreLib(object):
 
     def __init__(self, uri, poolmanager=None, username='admin', 
                  password='admin'):
-        '''
+        """
         Constructor for the AICLib object.
         - If pool_manager is 
-        '''
+        """
         if poolmanager is None:
             self.conn = urllib3.connection_from_url(uri)
         else:
@@ -100,7 +100,6 @@ class _Connection(object):
 
     def __init__(self, username='admin', password='admin',
                  connection=None):
-        logger.info("Creating AICLibConnection")
         self._conn = connection
         self.authenticated = False
         self.username = username

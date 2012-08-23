@@ -24,65 +24,18 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-class NVPLib(core.CoreLib):
-
-    def __init__(self, uri, poolmanager=None, username='admin',
-                 password='admin'):
-        super(NVPLib, self).__init__(uri, poolmanager, username, password)
-
-    def nvp_function(self):
-        entity = _NVPFunction(self)
-        return entity
-
-    def lswitch(self, uuid=None):
-        entity = _LSwitch(self, uuid=uuid)
-        return entity
-
-    def lswitch_port(self):
-        entity = _LSwitchPort(self)
-        return entity
-
-
-class _NVPFunction(core.Entity):
-
-    def __init__(self, connection):
-        super(NVPFunction, self).__init__(connection)
-        logger.info("Created NVPFunction")
-
-    def logout(self):
-        return super(_NVPFunction, self).
-                _action('GET', common.apimap('logout'))
-
-    def get_method_uris(self):
-        return super(_NVPFunction, self).
-                _action('GET', common.apimap('getMethodURIs'))
-
-    def read_method(self, method_name):
-        uri = "%s/%s" % (common.apimap('readMethod'), method_name)
-        return super(_NVPFunction, self)._action('GET', uri)
-
-    def get_schemas(self):
-        return super(_NVPFunction, self).
-                _action('GET', common.apimap('schema'))
-
-    def read_schema(self, schema_name):
-        uri = "%s/%s" % (common.apimap('readSchema'), schema_name)
-        return super(_NVPFunction, self)._action('GET', uri)
-
-
-
 class _NVPEntity(core.Entity):
 
     def __init__(self, connection):
         super(_NVPEntity, self).__init__(connection)
-        logger.info("Created NVPEntity")
 
     def ignore_cluster_majority(ignore):
         self.ignore_cluster_majority = ignore
         return self
 
     def tags(self, tagList):
-        logger.info("Messing with tags")
+        #TODO: NVP is inconsistent with the way they handle the multivalued
+        #      tag business
         return self
 
     def display_name(self, name):
@@ -105,6 +58,7 @@ class _LSwitch(_NVPEntity):
         return self
 
     def transport_zones(self, zones):
+        #TODO: Soon
         return self
 
     def _unroll(self):

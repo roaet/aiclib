@@ -56,6 +56,7 @@ class NVPEntityQuery(NVPBaseQuery):
         return self
 
     def alert_changed_since(self, date):
+        #TODO: Need to figure out what date format NVP wants
         return self
 
     def display_name(self, name):
@@ -67,13 +68,15 @@ class NVPEntityQuery(NVPBaseQuery):
         return self
 
     def last_modified(self, date):
-
+        #TODO: Need to figure out what date format NVP wants
         return self
 
     def tags(self, taglist):
+        #TODO: NVP treats taglists differently and this requires thought
         return self
 
     def tagscopes(self, tagscopelist):
+        #TODO: Will do with tags
         return self
 
     def uuid(self, uid):
@@ -110,5 +113,6 @@ class LSwitchQuery(NVPEntityQuery):
         return self
 
     def results(self):
+        #TODO: This may require some modifications at this level
         return super(LSwitchQuery, self).results()
 
