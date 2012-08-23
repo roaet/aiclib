@@ -23,6 +23,16 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
+def requireuuid(fn):
+    def wrapper(self):
+        if not self.uuid:
+            msg = "Missing UUID for verb (%s). Failing"
+            logger.error(msg % fn.__name__)
+            return None
+        return fn(self)
+    return wrapper
+
+
 class NVPEntity(core.Entity):
 
     def __init__(self, connection):
@@ -105,47 +115,39 @@ class LSwitch(NVPEntity):
         """
         return super(LSwitch, self)._action('POST', common.apimap('lswitch'))
 
+    @requireuuid
     def delete(self):
         """
         Delete (verb) will delete the logical switch
         Requires a UUID set at the object.
         """
-        if not self.uuid:
-            logger.error("Attempted to delete without UUID: failing")
-            return None
         uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
         return super(LSwitch, self)._action('DELETE', uri)
 
+    @requireuuid
     def status(self):
         """
         Status (verb) will return the network status of the logical switch
         Requires a UUID set at the object.
         """
-        if not self.uuid:
-            logger.error("Attempted to check status without UUID: failing")
-            return None
         uri = "%s/%s/status" % (common.apimap('lswitch'), self.uuid)
         return super(LSwitch, self)._action('GET', uri)
 
+    @requireuuid
     def read(self):
         """
         Read (verb) will return the configuration of the logical switch
         Requires a UUID set at the object.
         """
-        if not self.uuid:
-            logger.error("Attempted to read config without UUID: failing")
-            return None
         uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
         return super(LSwitch, self)._action('GET', uri)
 
+    @requireuuid
     def update(self):
         """
         Update (verb) will update the logical switch
         Requires a UUID set at the object.
         """
-        if not self.uuid:
-            logger.error("Attempted to update config without UUID: failing")
-            return None
         uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
         return super(LSwitch, self)._action('PUT', uri)
 
