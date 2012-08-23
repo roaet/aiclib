@@ -6,6 +6,7 @@ Created on August 21, 2012
 
 _version = 'ws.v1'
 
+#TODO: Needs to be changed to something less bad
 _apimap = {
     'login': 'login',
     'logout': 'logout',

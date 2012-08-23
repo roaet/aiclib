@@ -29,6 +29,8 @@ class NVPBaseQuery(core.Query):
         self.query['fields'] = '*'
 
     def fields(self, fieldlist):
+        if isinstance(fieldlist, str):
+            fieldlist = [fieldlist]
         self.query['fields'] = ','.join(fieldlist)
         return self
 

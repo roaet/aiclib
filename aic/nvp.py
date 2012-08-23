@@ -34,7 +34,10 @@ class Connection(core.CoreLib):
         return entity
 
     def lswitch(self, uuid=None):
-        entity = nvpentity.LSwitch(self, uuid=uuid)
+        uuidvalue = uuid
+        if type(uuid) is dict and 'uuid' in uuid:
+            uuidvalue = uuid['uuid']
+        entity = nvpentity.LSwitch(self, uuid=uuidvalue)
         return entity
 
     def lswitch_port(self):

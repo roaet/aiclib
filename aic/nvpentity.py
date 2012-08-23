@@ -32,9 +32,23 @@ class NVPEntity(core.Entity):
         self.ignore_cluster_majority = ignore
         return self
 
-    def tags(self, tagList):
-        #TODO: NVP is inconsistent with the way they handle the multivalued
-        #      tag business
+    def tags(self, taglist):
+        """
+        This function is expecting a list of dictionaries that each have,
+        at most, two values:
+        {
+            'tag':<some value>,
+            'scope':<some value>
+        }
+
+        If a list is not given and only a dictionary is given it will put the
+        dictionary in a list for you.
+
+        In all situations the tag element is required.
+        """
+        if not type(taglist) is list:
+            taglist = [taglist]
+        self.info['tags'] = taglist
         return self
 
     def display_name(self, name):
