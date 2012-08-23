@@ -44,6 +44,10 @@ class CoreLib(object):
                                       password=password)
 
     def _action(self, entity, method, resource):
+        """
+        This is the ancestor method that all 'verbs' must call to perform
+        an action.
+        """
         if not entity:
             return
         logger.info("(%s @ %s): %s" % (method, resource,
