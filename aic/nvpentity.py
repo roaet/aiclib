@@ -34,6 +34,8 @@ class NVPEntity(core.Entity):
 
     def tags(self, taglist):
         """
+        Will set/update the tag list of the object.
+
         This function is expecting a list of dictionaries that each have,
         at most, two values:
         {
@@ -52,6 +54,11 @@ class NVPEntity(core.Entity):
         return self
 
     def display_name(self, name):
+        """
+        Will set/update the display name of the object. By default if a
+        display name is not given the generated UUID will be used as the
+        display name.
+        """
         self.info['display_name'] = name
         return self
 
@@ -67,10 +74,16 @@ class LSwitch(NVPEntity):
         self.uuid = uuid
 
     def port_isolation_enabled(self, enabled):
+        """
+        Will set/update the port_isolation_enabled flag on the switch
+        """
         self.info['port_isolation_enabled'] = enabled
         return self
 
     def transport_zones(self, zones):
+        """
+        Will set/update the transport zones that the switch is a 'member' of
+        """
         #TODO: Soon
         return self
 
@@ -79,14 +92,24 @@ class LSwitch(NVPEntity):
         return self.info
 
     def query(self):
+        """
+        Returns the query object for logical switches
+        """
         queryobject = nvpquery.LSwitchQuery(self.connection,
                                             common.apimap('lswitch'))
         return queryobject
 
     def create(self):
+        """
+        Create (verb) will create the logical switch
+        """
         return super(LSwitch, self)._action('POST', common.apimap('lswitch'))
 
     def delete(self):
+        """
+        Delete (verb) will delete the logical switch
+        Requires a UUID set at the object.
+        """
         if not self.uuid:
             logger.error("Attempted to delete without UUID: failing")
             return None
@@ -94,6 +117,10 @@ class LSwitch(NVPEntity):
         return super(LSwitch, self)._action('DELETE', uri)
 
     def status(self):
+        """
+        Status (verb) will return the network status of the logical switch
+        Requires a UUID set at the object.
+        """
         if not self.uuid:
             logger.error("Attempted to check status without UUID: failing")
             return None
@@ -101,6 +128,10 @@ class LSwitch(NVPEntity):
         return super(LSwitch, self)._action('GET', uri)
 
     def read(self):
+        """
+        Read (verb) will return the configuration of the logical switch
+        Requires a UUID set at the object.
+        """
         if not self.uuid:
             logger.error("Attempted to read config without UUID: failing")
             return None
@@ -108,6 +139,10 @@ class LSwitch(NVPEntity):
         return super(LSwitch, self)._action('GET', uri)
 
     def update(self):
+        """
+        Update (verb) will update the logical switch
+        Requires a UUID set at the object.
+        """
         if not self.uuid:
             logger.error("Attempted to update config without UUID: failing")
             return None

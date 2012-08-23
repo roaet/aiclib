@@ -7,7 +7,8 @@ Just some work on something that sounds like quantum
 =======
 Use of AIC wrapper lib
 =======
-The AIC wrapper command consists of two parts:
+The AIC wrapper command, or sentence, consists of two
+parts:
 - An object and its parameters
 - A verb that acts on that object
 
@@ -28,6 +29,21 @@ are set during the declaration of the object.
 
 A verb works on the object and is always the last portion
 of a normal command.
+
+=======
+Querying using the wrapper lib
+=======
+
+The exception to the normal command pattern is when a user
+wishes to query. A query works much like the typical use
+but acts works as a modifer to the verb (an adverb).
+
+Typical query use is as follows:
+library.[params].object.query.[params].verb
+
+The object stated in the command is what query is looking
+for. Parameters may be passed to the query to make the
+search more precise.
 
 ========
 Extending the wrapper lib

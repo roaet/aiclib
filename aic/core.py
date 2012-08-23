@@ -33,7 +33,10 @@ class CoreLib(object):
                  password='admin'):
         """
         Constructor for the AICLib object.
-        - If pool_manager is
+        - If poolmanager is not passed in then this class will create its
+        own connection pool.
+        - The username and password defaults are specific to nvp's api and
+        should be pushed up to that level
         """
         if poolmanager is None:
             self.conn = urllib3.connection_from_url(uri)
@@ -44,10 +47,6 @@ class CoreLib(object):
                                       password=password)
 
     def _action(self, entity, method, resource):
-        """
-        This is the ancestor method that all 'verbs' must call to perform
-        an action.
-        """
         if not entity:
             return
         logger.info("(%s @ %s): %s" % (method, resource,
@@ -74,6 +73,10 @@ class Entity(object):
         self.info = {}
 
     def _action(self, method, resource):
+        """
+        This is the ancestor method that all 'verbs' must call to perform
+        an action.
+        """
         return self.connection._action(self, method, resource)
 
     def _unroll(self):

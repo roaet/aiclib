@@ -55,8 +55,10 @@ class NVPEntityQuery(NVPBaseQuery):
         self.query['alert'] = 'true' if flag else 'false'
         return self
 
-    def alert_changed_since(self, date):
-        #TODO: Need to figure out what date format NVP wants
+    def alert_changed_since(self, comparison, date):
+        """
+        Comparison operator (string): >,>=,<,<=,=,!=
+        """
         return self
 
     def display_name(self, name):
@@ -67,8 +69,10 @@ class NVPEntityQuery(NVPBaseQuery):
         self.query['identifier'] = ident
         return self
 
-    def last_modified(self, date):
-        #TODO: Need to figure out what date format NVP wants
+    def last_modified(self, comparison, date):
+        """
+        Comparison operator (string): >,>=,<,<=,=,!=
+        """
         return self
 
     def tags(self, taglist):
