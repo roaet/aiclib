@@ -4,10 +4,8 @@ Created on August 22, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 
-import json
 import logging
 
-import common
 import core
 
 logger = logging.getLogger(__name__)
@@ -38,7 +36,7 @@ class NVPBaseQuery(core.Query):
         results = super(NVPEntityQuery, self)._query('GET')
         return results
 
-    
+
 class NVPEntityQuery(NVPBaseQuery):
 
     def __init__(self, aic_connection, resource):
@@ -115,4 +113,3 @@ class LSwitchQuery(NVPEntityQuery):
     def results(self):
         #TODO: This may require some modifications at this level
         return super(LSwitchQuery, self).results()
-

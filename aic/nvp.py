@@ -4,13 +4,11 @@ Created on August 23, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 
-import json
 import logging
 
 import common
 import core
 import nvpentity
-import nvpquery
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -32,40 +30,39 @@ class Connection(core.CoreLib):
         super(Connection, self).__init__(uri, poolmanager, username, password)
 
     def nvp_function(self):
-        entity = _NVPFunction(self)
+        entity = NVPFunction(self)
         return entity
 
     def lswitch(self, uuid=None):
-        entity = nvpentity._LSwitch(self, uuid=uuid)
+        entity = nvpentity.LSwitch(self, uuid=uuid)
         return entity
 
     def lswitch_port(self):
-        entity = nvpentity._LSwitchPort(self)
+        entity = nvpentity.LSwitchPort(self)
         return entity
 
 
-class _NVPFunction(core.Entity):
+class NVPFunction(core.Entity):
 
     def __init__(self, connection):
         super(NVPFunction, self).__init__(connection)
 
     def logout(self):
-        return super(_NVPFunction, self)._action(
+        return super(NVPFunction, self)._action(
                 'GET', common.apimap('logout'))
 
     def get_method_uris(self):
-        return super(_NVPFunction, self)._action(
+        return super(NVPFunction, self)._action(
                 'GET', common.apimap('getMethodURIs'))
 
     def read_method(self, method_name):
         uri = "%s/%s" % (common.apimap('readMethod'), method_name)
-        return super(_NVPFunction, self)._action('GET', uri)
+        return super(NVPFunction, self)._action('GET', uri)
 
     def get_schemas(self):
-        return super(_NVPFunction, self)._action(
+        return super(NVPFunction, self)._action(
                 'GET', common.apimap('schema'))
 
     def read_schema(self, schema_name):
         uri = "%s/%s" % (common.apimap('readSchema'), schema_name)
-        return super(_NVPFunction, self)._action('GET', uri)
-
+        return super(NVPFunction, self)._action('GET', uri)
