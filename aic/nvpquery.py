@@ -7,8 +7,8 @@ Created on August 22, 2012
 import json
 import logging
 
-from aic.aiccore import AICQuery
 import common
+import core
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -23,7 +23,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-class NVPBaseQuery(AICQuery):
+class NVPBaseQuery(core.Query):
 
     def __init__(self, aic_connection, resource):
         super(NVPBaseQuery, self).__init__(aic_connection, resource)
@@ -35,7 +35,6 @@ class NVPBaseQuery(AICQuery):
         return self
 
     def results(self):
-        print "dog"
         results = super(NVPEntityQuery, self)._query('GET')
         return results
 

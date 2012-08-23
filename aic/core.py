@@ -30,7 +30,71 @@ formatter = logging.Formatter(
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-class AICLibConnection(object):
+
+class CoreLib(object):
+
+    def __init__(self, uri, poolmanager=None, username='admin', 
+                 password='admin'):
+        '''
+        Constructor for the AICLib object.
+        - If pool_manager is 
+        '''
+        if poolmanager is None:
+            self.conn = urllib3.connection_from_url(uri)
+        else:
+            self.conn = poolmanager.connection_from_url(uri)
+        self.connection = _Connection(connection=self.conn,
+                                      username=username,
+                                      password=password)
+
+    def _action(self, entity, method, resource):
+        if not entity:
+            return
+        logger.info("(%s @ %s): %s" % (method, resource, 
+                                       entity._unroll()))
+        r = self.connection.request(method, resource,
+                                          body = entity._unroll())
+        logger.info("Response headers: %s" % r.headers)
+        responselength = 0
+        if 'content-length' in r.headers:
+            responselength = int(r.getheader('content-length'))
+        if responselength > 0:
+            if r.getheader('content-type') == 'application/json':
+                jsonreturn = json.loads(r.data)
+                return jsonreturn
+            else:
+                return r.data
+        return None
+
+
+class Entity(object):
+
+    def __init__(self, connection):
+        self.connection = connection
+        self.info = {}
+
+    def _action(self, method, resource):
+        return self.connection._action(self, method, resource)
+
+    def _unroll(self):
+        return self.info
+
+
+class Query(object):
+
+    def __init__(self, connection, resource):
+        self.connection = connection
+        self.query = {}
+        self.resource = resource
+
+    def _query(self, method):
+        return self.connection._action(self, method, self.resource)
+
+    def _unroll(self):
+        return self.query
+
+
+class _Connection(object):
     _encode_url_methods = set(['DELETE', 'GET', 'HEAD', 'OPTIONS'])
     _encode_body_methods = set(['PATCH', 'POST', 'PUT', 'TRACE'])
 
@@ -43,7 +107,7 @@ class AICLibConnection(object):
         self.password = password
         self.maxRetries = 5
         self._headers = {} 
-        self.generationNumber = 0
+        self.generationnumber = 0
         self.authkey = ''
 
     @property
@@ -73,15 +137,15 @@ class AICLibConnection(object):
         self._headers = {
             'Cookie' : self.authkey,
             'Content-Type' : 'application/json',
-            'X-Nvp-Wait-For-Config-Generation': self.generationNumber,
+            'X-Nvp-Wait-For-Config-Generation': self.generationnumber,
         }
         return self._headers
 
-    def request(self, method, apicall, generationNumber=0, body=None):
+    def request(self, method, apicall, generationnumber=0, body=None):
         retryPause = 0
         r = None
         for retryCount in xrange(self.maxRetries):
-            self.generationNumber = generationNumber
+            self.generationnumber = generationnumber
             jsonBody = json.dumps(body)
             if method in self._encode_url_methods:
                 r = self.connection.request_encode_url(method, apicall,
@@ -99,8 +163,8 @@ class AICLibConnection(object):
                 except EnvironmentError as e:
                     logger.info("Waiting for server: ",
                                 r.headers['retry-after'])
-                    retryPause = r.headers['retry-after']
-                    time.sleep(retryPause)
+                    retrypause = r.headers['retry-after']
+                    time.sleep(retrypause)
                 except:
                     logger.error("Unhandled error:")
                     raise
@@ -112,8 +176,8 @@ class AICLibConnection(object):
         return
 
     def _iserror(self, resp):
-        errorCheck = resp.status - 200
-        if errorCheck >= 100:
+        errorcheck = resp.status - 200
+        if errorcheck >= 100:
             return True
         logger.info("Request success %s (%s)" % (resp.status, resp.reason))
         return False
@@ -127,8 +191,8 @@ class AICLibConnection(object):
         elif resp.status == 401:
             logger.info("Authorization expired; renewing")
             self.authenticated = False
-            authStatus = self._login(self.username, self.password)
-            if not authStatus:
+            authstatus = self._login(self.username, self.password)
+            if not authstatus:
                 logger.error("Re-authorization failed.")
                 raise IOError('401','Unauthorized')
         elif resp.status == 403:
