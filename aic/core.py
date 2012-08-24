@@ -13,7 +13,6 @@ from urllib3.exceptions import MaxRetryError
 
 import common
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -31,12 +30,15 @@ class CoreLib(object):
 
     def __init__(self, uri, poolmanager=None, username='admin',
                  password='admin'):
-        """
-        Constructor for the AICLib object.
-        - If poolmanager is not passed in then this class will create its
-        own connection pool.
-        - The username and password defaults are specific to nvp's api and
-        should be pushed up to that level
+        """Constructor for the AICLib object.
+
+        Arguments:
+        uri -- the address of the nvp controller including scheme (required)
+
+        Keyword arguments:
+        poolmanager -- a pool manager provided by urlib3 (default None)
+        username -- the username to log into the nvp controller (default admin)
+        password -- the password to log into the nvp controller (default admin)
         """
         if poolmanager is None:
             self.conn = urllib3.connection_from_url(uri)
@@ -63,8 +65,7 @@ class Entity(object):
         self.info = {}
 
     def _action(self, method, resource):
-        """
-        This is the ancestor method that all 'verbs' must call to perform
+        """This is the ancestor method that all 'verbs' must call to perform
         an action.
         """
         return self.connection._action(self, method, resource)
@@ -91,8 +92,7 @@ class Connection(object):
     _encode_url_methods = set(['DELETE', 'GET', 'HEAD', 'OPTIONS'])
     _encode_body_methods = set(['PATCH', 'POST', 'PUT', 'TRACE'])
 
-    def __init__(self, username='admin', password='admin',
-                 connection=None):
+    def __init__(self, username, password, connection=None):
         self._conn = connection
         self.authenticated = False
         self.username = username
