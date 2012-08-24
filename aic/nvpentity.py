@@ -4,23 +4,13 @@ Created on August 22, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 
-import logging
+import log
 
 import common
 import core
 import nvpquery
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-ch.setFormatter(formatter)
-logger.addHandler(ch)
+logger = log.get_logger(__name__)
 
 
 def requireuuid(fn):

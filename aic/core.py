@@ -5,7 +5,7 @@ Created on August 17, 2012
 """
 
 import json
-import logging
+import log
 import time
 
 import urllib3
@@ -14,17 +14,7 @@ from urllib3.exceptions import MaxRetryError
 import common
 
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-ch.setFormatter(formatter)
-logger.addHandler(ch)
+logger = log.get_logger(__name__)
 
 
 class CoreLib(object):

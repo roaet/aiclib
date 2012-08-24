@@ -5,23 +5,14 @@ Created on August 23, 2012
 """
 
 import json
-import logging
+import log
 
 import common
 import core
 import nvpentity
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger = log.get_logger(__name__)
 
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-ch.setFormatter(formatter)
-logger.addHandler(ch)
 
 
 class Connection(core.CoreLib):
