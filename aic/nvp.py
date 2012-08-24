@@ -4,6 +4,7 @@ Created on August 23, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 
+import json
 import logging
 
 import common
@@ -43,6 +44,28 @@ class Connection(core.CoreLib):
     def lswitch_port(self):
         entity = nvpentity.LSwitchPort(self)
         return entity
+
+    def _action(self, entity, method, resource):
+        """
+        Will inject generation ID into the JSON result object if it exists
+        """
+        r = super(Connection, self)._action(entity, method, resource)
+        logger.info("Response headers: %s" % r.headers)
+        responselength = 0
+        generationid = None
+        if 'x-nvp-config-generation' in r.headers:
+            generationid = r.getheader('x-nvp-config-generation')
+        if 'content-length' in r.headers:
+            responselength = int(r.getheader('content-length'))
+        if responselength > 0:
+            if r.getheader('content-type') == 'application/json':
+                jsonreturn = json.loads(r.data)
+                if generationid:
+                    jsonreturn['_generationid'] = generationid
+                return jsonreturn
+            else:
+                return r.data
+        return
 
 
 class NVPFunction(core.Entity):

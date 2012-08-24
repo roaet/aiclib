@@ -53,17 +53,7 @@ class CoreLib(object):
                                        entity._unroll()))
         r = self.connection.request(method, resource,
                                           body=entity._unroll())
-        logger.info("Response headers: %s" % r.headers)
-        responselength = 0
-        if 'content-length' in r.headers:
-            responselength = int(r.getheader('content-length'))
-        if responselength > 0:
-            if r.getheader('content-type') == 'application/json':
-                jsonreturn = json.loads(r.data)
-                return jsonreturn
-            else:
-                return r.data
-        return None
+        return r
 
 
 class Entity(object):
