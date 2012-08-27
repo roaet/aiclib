@@ -18,23 +18,23 @@ class TestLogicalSwitch(test.TestCase):
         if self.switch:
             self.nvp.lswitch(self.switch).delete()
 
-    def test_switchRead(self):
+    def test_switch_read(self):
         switch_info = self.nvp.lswitch(self.switch).read()
         self.assertTrue(switch_info['type'] == 'LogicalSwitchConfig',
                         "Switch info should be the correct type")
 
-    def test_switchStatus(self):
+    def test_switch_status(self):
         switch_status = self.nvp.lswitch(self.switch).status()
         self.assertTrue(switch_status['type'] == 'LogicalSwitchStatus',
                         "Switch status should be the correct type")
 
-    def test_switchQuery(self):
+    def test_switch_query(self):
         query = self.nvp.lswitch().query()
         query_results = query.uuid(self.switch['uuid']).results()
         self.assertTrue(query_results['result_count'] == 1,
                         "Query on UUID should return single result")
 
-    def test_switchUpdate(self):
+    def test_switch_update(self):
         current_name = self.switch['display_name']
         new_name = "test%s" % current_name
         switch_object = self.nvp.lswitch(self.switch)
