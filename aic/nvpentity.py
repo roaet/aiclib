@@ -33,20 +33,16 @@ class NVPEntity(core.Entity):
         return self
 
     def tags(self, taglist):
-        """
-        Will set/update the tag list of the object.
+        """Will set/update the tag list of the object.
 
-        This function is expecting a list of dictionaries that each have,
-        at most, two values:
+        Arguments:
+        tagList -- a list of dictionaries with the following format:
         {
-            'tag':<some value>,
+            'tag':<some value>,  <--- is required
             'scope':<some value>
         }
-
         If a list is not given and only a dictionary is given it will put the
         dictionary in a list for you.
-
-        In all situations the tag element is required.
         """
         if not type(taglist) is list:
             taglist = [taglist]
@@ -54,8 +50,7 @@ class NVPEntity(core.Entity):
         return self
 
     def display_name(self, name):
-        """
-        Will set/update the display name of the object. By default if a
+        """Will set/update the display name of the object. By default if a
         display name is not given the generated UUID will be used as the
         display name.
         """
@@ -74,15 +69,13 @@ class LSwitch(NVPEntity):
         self.uuid = uuid
 
     def port_isolation_enabled(self, enabled):
-        """
-        Will set/update the port_isolation_enabled flag on the switch
+        """Will set/update the port_isolation_enabled flag on the switch
         """
         self.info['port_isolation_enabled'] = enabled
         return self
 
     def transport_zones(self, zones):
-        """
-        Will set/update the transport zones that the switch is a 'member' of
+        """Will set/update the transport zones that the switch is a 'member' of
         """
         #TODO: Soon
         return self
@@ -92,23 +85,20 @@ class LSwitch(NVPEntity):
         return self.info
 
     def query(self):
-        """
-        Returns the query object for logical switches
+        """Returns the query object for logical switches
         """
         queryobject = nvpquery.LSwitchQuery(self.connection,
                                             common.apimap('lswitch'))
         return queryobject
 
     def create(self):
-        """
-        Create (verb) will create the logical switch
+        """Create (verb) will create the logical switch
         """
         return super(LSwitch, self)._action('POST', common.apimap('lswitch'))
 
     @requireuuid
     def delete(self):
-        """
-        Delete (verb) will delete the logical switch
+        """Delete (verb) will delete the logical switch
         Requires a UUID set at the object.
         """
         uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
@@ -116,8 +106,7 @@ class LSwitch(NVPEntity):
 
     @requireuuid
     def status(self):
-        """
-        Status (verb) will return the network status of the logical switch
+        """Status (verb) will return the network status of the logical switch
         Requires a UUID set at the object.
         """
         uri = "%s/%s/status" % (common.apimap('lswitch'), self.uuid)
@@ -125,8 +114,7 @@ class LSwitch(NVPEntity):
 
     @requireuuid
     def read(self):
-        """
-        Read (verb) will return the configuration of the logical switch
+        """Read (verb) will return the configuration of the logical switch
         Requires a UUID set at the object.
         """
         uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
@@ -134,8 +122,7 @@ class LSwitch(NVPEntity):
 
     @requireuuid
     def update(self):
-        """
-        Update (verb) will update the logical switch
+        """Update (verb) will update the logical switch
         Requires a UUID set at the object.
         """
         uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
@@ -144,8 +131,10 @@ class LSwitch(NVPEntity):
 
 class LSwitchPort(NVPEntity):
 
-    def __init___(self, connection):
+    def __init__(self, connection, lswitch_uuid, uuid=None):
         super(LSwitchPort, self).__init__(connection)
+        self.lswitch_uuid = lswitch_uuid
+        self.uuid = uuid
 
     def admin_status_enabled(self, enabled):
         self.info['admin_status_enabled'] = enabled
@@ -154,3 +143,17 @@ class LSwitchPort(NVPEntity):
     def _unroll(self):
         super(LSwitchPort, self)._unroll()
         return self.info
+
+    def create(self):
+        """Create (verb) will create the logical port on the switch"""
+        uri = "%s/%s/%s" % (common.apimap('lswitch'), self.lswitch_uuid,
+                            'lport')
+        return super(LSwitchPort, self)._action("POST", uri)
+
+    @requireuuid
+    def delete(self):
+        """Delete (verb) will delete the logical port.
+        Requires a UUID set at the object"""
+        uri = "%s/%s/%s/%s" % (common.apimap('lswitch'), self.lswitch_uuid,
+                               'lport', self.uuid)
+        return super(LSwitchPort, self)._action("DELETE", uri)

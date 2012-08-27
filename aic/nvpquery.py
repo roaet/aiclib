@@ -6,6 +6,7 @@ Created on August 22, 2012
 
 import log
 
+import common
 import core
 
 logger = log.get_logger(__name__)
@@ -45,10 +46,11 @@ class NVPEntityQuery(NVPBaseQuery):
         self.query['alert'] = 'true' if flag else 'false'
         return self
 
-    def alert_changed_since(self, comparison, date):
+    def alert_changed_since(self, comparison, date_time):
+        """Comparison operator (string): >,>=,<,<=,=,!=
         """
-        Comparison operator (string): >,>=,<,<=,=,!=
-        """
+        query_value = "%s%s" % (comparison, common.dttounix(date_time))
+        self.query['alert_changed_since'] = query_value
         return self
 
     def display_name(self, name):
@@ -59,10 +61,11 @@ class NVPEntityQuery(NVPBaseQuery):
         self.query['identifier'] = ident
         return self
 
-    def last_modified(self, comparison, date):
+    def last_modified(self, comparison, date_time):
+        """Comparison operator (string): >,>=,<,<=,=,!=
         """
-        Comparison operator (string): >,>=,<,<=,=,!=
-        """
+        query_value = "%s%s" % (comparison, common.dttounix(date_time))
+        self.query['last_modified'] = query_value
         return self
 
     def tags(self, taglist):

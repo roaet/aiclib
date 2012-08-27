@@ -28,8 +28,8 @@ class CoreLib(object):
 
         Keyword arguments:
         poolmanager -- a pool manager provided by urlib3 (default None)
-        username -- the username to log into the nvp controller (default admin)
-        password -- the password to log into the nvp controller (default admin)
+        username -- the username to log into the nvp controller
+        password -- the password to log into the nvp controller
         """
         if poolmanager is None:
             self.conn = urllib3.connection_from_url(uri)

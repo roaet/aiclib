@@ -3,6 +3,7 @@ Created on August 21, 2012
 
 @author: Justin Hammond, Rackspace Hosting
 """
+import calendar
 import log
 
 
@@ -22,6 +23,7 @@ _apimap = {
     'controlCluster': 'control-cluster',
     # switch commands
     'lswitch': 'lswitch',
+    'lport': 'lport',
 }
 
 
@@ -30,3 +32,8 @@ def apimap(method):
         raise TypeError('400', "(%s) is an unsupported command" % method)
     uri = "/%s/%s" % (_version, _apimap[method])
     return uri
+
+
+def dttounix(date_time):
+    unixtime = calendar.timegm(date_time.utctimetuple())
+    return unixtime
