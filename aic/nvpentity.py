@@ -197,6 +197,8 @@ class LSwitchPort(NVPEntity):
         """
         if uuid is None:
             uuid = 'null'
+        elif not common.isuuid(uuid):
+            raise AttributeError("UUID is invalid")
         self.info['queue_uuid'] = uuid
         return self
 
@@ -210,6 +212,8 @@ class LSwitchPort(NVPEntity):
         """
         if not type(uuidlist) is list:
             uuidlist = [uuidlist]
+        if False in map(common.isuuid, uuidlist):
+            raise AttributeError("One or more UUIDs are invalid")
         self['security_profiles'] = uuidlist
         return self
 

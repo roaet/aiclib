@@ -37,3 +37,7 @@ def apimap(method):
 def dttounix(date_time):
     unixtime = calendar.timegm(date_time.utctimetuple())
     return unixtime
+
+
+def isuuid(uuid):
+    return True
