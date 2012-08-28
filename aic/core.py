@@ -103,7 +103,7 @@ class Connection(object):
 
     def _login(self, username, password):
         fields = {'username': username, 'password': password}
-        r = self._conn.request_encode_body('POST', common.apimap('login'),
+        r = self._conn.request_encode_body('POST', common.genuri('login'),
                                            fields=fields,
                                            encode_multipart=False)
         if self._iserror(r):

@@ -69,6 +69,12 @@ class NVPEntity(core.Entity):
         return self.info
 
 
+class TransportZone(NVPEntity):
+    def __init__(self, connection, uuid=None):
+        super(TransportZone, self).__init__(connection)
+        self.uuid = uuid
+
+
 class LSwitch(NVPEntity):
 
     def __init__(self, connection, uuid=None):
@@ -95,20 +101,20 @@ class LSwitch(NVPEntity):
         """Returns the query object for logical switches
         """
         queryobject = nvpquery.LSwitchQuery(self.connection,
-                                            common.apimap('lswitch'))
+                                            common.genuri('lswitch'))
         return queryobject
 
     def create(self):
         """Create (verb) will create the logical switch
         """
-        return super(LSwitch, self)._action('POST', common.apimap('lswitch'))
+        return super(LSwitch, self)._action('POST', common.genuri('lswitch'))
 
     @requireuuid
     def delete(self):
         """Delete (verb) will delete the logical switch
         Requires a UUID set at the object.
         """
-        uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
+        uri = common.genuri('lswitch', self.uuid)
         return super(LSwitch, self)._action('DELETE', uri)
 
     @requireuuid
@@ -116,7 +122,7 @@ class LSwitch(NVPEntity):
         """Status (verb) will return the network status of the logical switch
         Requires a UUID set at the object.
         """
-        uri = "%s/%s/status" % (common.apimap('lswitch'), self.uuid)
+        uri = common.genuri('lswitch', self.uuid, 'status')
         return super(LSwitch, self)._action('GET', uri)
 
     @requireuuid
@@ -124,7 +130,7 @@ class LSwitch(NVPEntity):
         """Read (verb) will return the configuration of the logical switch
         Requires a UUID set at the object.
         """
-        uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
+        uri = common.genuri('lswitch', self.uuid)
         return super(LSwitch, self)._action('GET', uri)
 
     @requireuuid
@@ -132,7 +138,7 @@ class LSwitch(NVPEntity):
         """Update (verb) will update the logical switch
         Requires a UUID set at the object.
         """
-        uri = "%s/%s" % (common.apimap('lswitch'), self.uuid)
+        uri = common.genuri('lswitch', self.uuid)
         return super(LSwitch, self)._action('PUT', uri)
 
 
@@ -146,6 +152,26 @@ class LSwitchPort(NVPEntity):
     def admin_status_enabled(self, enabled):
         self.info['admin_status_enabled'] = enabled
         return self
+
+    def attachment_patch(self, peer_uuid, lrouter_uuid=None):
+        if not common.isuuid(peer_uuid):
+            raise AttributeError("Peer Port UUID is invalid")
+        if lrouter_uuid and not common.isuuid(lrouter_uuid):
+            raise AttributeError("Logical Router UUID is invalid")
+        pass
+
+    def attachment_vif(self, vif_uuid, hypervisor=None):
+        pass
+
+    def attachment_extended_network_bridge(self, tnode_uuid, bridgeid,
+                                           vlan=None):
+        pass
+
+    def attachment_mdi(self, mdiservice, interconnectid):
+        pass
+
+    def attachment_l2gateway(self, gateway_uuid, vlan=None):
+        pass
 
     def allowed_address_pairs(self, address_pair_list):
         """Will set/update the address pair list of the object.
@@ -223,30 +249,41 @@ class LSwitchPort(NVPEntity):
 
     def create(self):
         """Create (verb) will create the logical port on the switch"""
-        uri = "%s/%s/%s" % (common.apimap('lswitch'), self.lswitch_uuid,
-                            'lport')
+        uri = common.genuri('lswitch', self.lswitch_uuid, 'lport')
         return super(LSwitchPort, self)._action("POST", uri)
 
     @requireuuid
     def read(self):
         """Read (verb) will read the logical port's configuration"""
-        uri = "%s/%s/%s/%s" % (common.apimap('lswitch'),
-                               self.lswitch_uuid, 'lport', self.uuid)
+        uri = common.genuri('lswitch', self.lswitch_uuid, 'lport', self.uuid)
         return super(LSwitchPort, self)._action("GET", uri)
+
+    @requireuuid
+    def statistics(self):
+        """statistics (verb) will return the port's stats"""
+        uri = common.genuri('lswitch', self.lswitch_uuid, 'lport', self.uuid,
+                            'statistic')
+        return super(LSwitchPort, self)._action("GET", uri)
+
+    @requireuuid
+    def clear_statistics(self):
+        """clear_statistics (verb) will clear the port's stats"""
+        uri = common.genuri('lswitch', self.lswitch_uuid, 'lport', self.uuid,
+                            'statistic')
+        return super(LSwitchPort, self)._action("DELETE", uri)
 
     @requireuuid
     def status(self):
         """Status (verb) will return the logical port's status"""
-        uri = "%s/%s/%s/%s/status" % (common.apimap('lswitch'),
-                                      self.lswitch_uuid, 'lport', self.uuid)
+        uri = common.genuri('lswitch', self.lswitch_uuid, 'lport', self.uuid,
+                            'status')
         return super(LSwitchPort, self)._action("GET", uri)
 
     @requireuuid
     def delete(self):
         """Delete (verb) will delete the logical port.
         Requires a UUID set at the object"""
-        uri = "%s/%s/%s/%s" % (common.apimap('lswitch'), self.lswitch_uuid,
-                               'lport', self.uuid)
+        uri = common.genuri('lswitch', self.lswitch_uuid, 'lport', self.uuid)
         return super(LSwitchPort, self)._action("DELETE", uri)
 
     @requireuuid
@@ -254,6 +291,5 @@ class LSwitchPort(NVPEntity):
         """Update (verb) will update the logical switch port
         Requires a UUID set at the object.
         """
-        uri = "%s/%s/%s/%s" % (common.apimap('lswitch'), self.lswitch_uuid,
-                               'lport', self.uuid)
+        uri = common.genuri('lswitch', self.lswitch_uuid, 'lport', self.uuid)
         return super(LSwitchPort, self)._action('PUT', uri)

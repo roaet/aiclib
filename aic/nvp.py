@@ -12,6 +12,7 @@ import core
 import nvpentity
 
 logger = log.get_logger(__name__)
+_version = 'ws.v1'
 
 
 def grab_uuid_of_type(text_or_dict, nvptype):
@@ -44,6 +45,11 @@ class Connection(core.CoreLib):
     def lswitch(self, uuid=None):
         uuidvalue = grab_uuid_of_type(uuid, "LogicalSwitchConfig")
         entity = nvpentity.LSwitch(self, uuid=uuidvalue)
+        return entity
+
+    def transportzone(self, uuid=None):
+        uuidvalue = grab_uuid_of_type(uuid, "TransportZoneConfig")
+        entity = nvpentity.TransportZone(self, uuid=uuidvalue)
         return entity
 
     def lswitch_port(self, lswitch_uuid, uuid=None):
@@ -85,21 +91,21 @@ class NVPFunction(core.Entity):
         super(NVPFunction, self).__init__(connection)
 
     def logout(self):
-        return super(NVPFunction, self)._action(
-                'GET', common.apimap('logout'))
+        uri = common.genuri("logout")
+        return super(NVPFunction, self)._action('GET', uri)
 
     def get_method_uris(self):
-        return super(NVPFunction, self)._action(
-                'GET', common.apimap('getMethodURIs'))
+        uri = common.genuri("doc", "method")
+        return super(NVPFunction, self)._action('GET', uri)
 
     def read_method(self, method_name):
-        uri = "%s/%s" % (common.apimap('readMethod'), method_name)
+        uri = common.genuri("doc", "method", method_name)
         return super(NVPFunction, self)._action('GET', uri)
 
     def get_schemas(self):
-        return super(NVPFunction, self)._action(
-                'GET', common.apimap('schema'))
+        uri = common.genuri("schema")
+        return super(NVPFunction, self)._action('GET', uri)
 
     def read_schema(self, schema_name):
-        uri = "%s/%s" % (common.apimap('readSchema'), schema_name)
+        uri = common.genuri("schema", schema_name)
         return super(NVPFunction, self)._action('GET', uri)
