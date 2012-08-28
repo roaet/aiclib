@@ -18,15 +18,25 @@ class TestLogicalSwitch(test.TestCase):
         if self.switch:
             self.nvp.lswitch(self.switch).delete()
 
+    def test_switch_create(self):
+        """Functionality is implicit in setUp and tearDown. If this passes
+        those must have passed"""
+        self.assertTrue(True)
+
+    def test_switch_delete(self):
+        """Functionality is implicit in setUp and tearDown. If this passes
+        those must have passed"""
+        self.assertTrue(True)
+
     def test_switch_read(self):
         switch_info = self.nvp.lswitch(self.switch).read()
         self.assertTrue(switch_info['type'] == 'LogicalSwitchConfig',
-                        "Switch info should be the correct type")
+                        "Switch info should be the correct type of JSON")
 
     def test_switch_status(self):
         switch_status = self.nvp.lswitch(self.switch).status()
         self.assertTrue(switch_status['type'] == 'LogicalSwitchStatus',
-                        "Switch status should be the correct type")
+                        "Switch status should be the correct type of JSON")
 
     def test_switch_query(self):
         query = self.nvp.lswitch().query()
