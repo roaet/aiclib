@@ -248,3 +248,12 @@ class LSwitchPort(NVPEntity):
         uri = "%s/%s/%s/%s" % (common.apimap('lswitch'), self.lswitch_uuid,
                                'lport', self.uuid)
         return super(LSwitchPort, self)._action("DELETE", uri)
+
+    @requireuuid
+    def update(self):
+        """Update (verb) will update the logical switch port
+        Requires a UUID set at the object.
+        """
+        uri = "%s/%s/%s/%s" % (common.apimap('lswitch'), self.lswitch_uuid,
+                               'lport', self.uuid)
+        return super(LSwitchPort, self)._action('PUT', uri)
