@@ -70,6 +70,8 @@ class NVPEntity(core.Entity):
 
 
 class QOSQueue(NVPEntity):
+    #TODO: Basic support requires entity specific features on creation
+    #TODO: Add all entity specific features
     def __init__(self, connection, uuid=None):
         super(QOSQueue, self).__init__(connection)
         self.uuid = uuid
@@ -109,6 +111,7 @@ class QOSQueue(NVPEntity):
 
 
 class SecurityProfile(NVPEntity):
+    #TODO: Add all entity specific features
     def __init__(self, connection, uuid=None):
         super(SecurityProfile, self).__init__(connection)
         self.uuid = uuid
@@ -148,6 +151,8 @@ class SecurityProfile(NVPEntity):
 
 
 class LRouter(NVPEntity):
+    #TODO: Basic support requires entity specific features on creation
+    #TODO: Add all entity specific features
     def __init__(self, connection, uuid=None):
         super(LRouter, self).__init__(connection)
         self.uuid = uuid
@@ -187,6 +192,7 @@ class LRouter(NVPEntity):
 
 
 class TransportNode(NVPEntity):
+    #TODO: Add all entity specific features
     def __init__(self, connection, uuid=None):
         super(TransportNode, self).__init__(connection)
         self.uuid = uuid
@@ -226,6 +232,7 @@ class TransportNode(NVPEntity):
 
 
 class MDIService(NVPEntity):
+    #TODO: Add all entity specific features
     def __init__(self, connection, uuid=None):
         super(MDIService, self).__init__(connection)
         self.uuid = uuid
@@ -265,6 +272,8 @@ class MDIService(NVPEntity):
 
 
 class GatewayService(NVPEntity):
+    #TODO: Basic support requires entity specific features on creation
+    #TODO: Add all entity specific features
     def __init__(self, connection, uuid=None):
         super(GatewayService, self).__init__(connection)
         self.uuid = uuid
@@ -304,6 +313,7 @@ class GatewayService(NVPEntity):
 
 
 class TransportZone(NVPEntity):
+    #TODO: Add all entity specific features
 
     def __init__(self, connection, uuid=None):
         super(TransportZone, self).__init__(connection)
