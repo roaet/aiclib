@@ -23,7 +23,7 @@ def grab_uuid_of_type(text_or_dict, nvptype):
     if not 'uuid' in text_or_dict:
         log.logging.error(errormsg % "uuid")
         raise TypeError(errormsg % "uuid")
-    if not 'type' in text_or_dict:
+    if nvptype and not 'type' in text_or_dict:
         log.logging.error(errormsg % "type")
         raise TypeError(errormsg % "type")
         if text_or_dict['type'] != nvptype:
@@ -47,8 +47,8 @@ class Connection(core.CoreLib):
         entity = nvpentity.LSwitch(self, uuid=uuidvalue)
         return entity
 
-    def transportzone(self, uuid=None):
-        uuidvalue = grab_uuid_of_type(uuid, "TransportZoneConfig")
+    def zone(self, uuid=None):
+        uuidvalue = grab_uuid_of_type(uuid, None)
         entity = nvpentity.TransportZone(self, uuid=uuidvalue)
         return entity
 

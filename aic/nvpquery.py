@@ -95,6 +95,12 @@ class NVPEntityQuery(NVPBaseQuery):
         return results
 
 
+class TransportZoneQuery(NVPEntityQuery):
+
+    def results(self):
+        return super(TransportZoneQuery, self).results()
+
+
 class LSwitchQuery(NVPEntityQuery):
 
     def port_isolation(self, flag):

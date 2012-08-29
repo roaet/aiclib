@@ -70,9 +70,43 @@ class NVPEntity(core.Entity):
 
 
 class TransportZone(NVPEntity):
+
     def __init__(self, connection, uuid=None):
         super(TransportZone, self).__init__(connection)
         self.uuid = uuid
+
+    def _unroll(self):
+        super(TransportZone, self)._unroll()
+        return self.info
+
+    def create(self):
+        """Create (verb) will create the transport zone"""
+        uri = common.genuri('transport-zone')
+        return super(TransportZone, self)._action('POST', uri)
+
+    def query(self):
+        """Returns the query object for the transport zone"""
+        uri = common.genuri('transport-zone')
+        queryobject = nvpquery.TransportZoneQuery(self.connection, uri)
+        return queryobject
+
+    @requireuuid
+    def update(self):
+        """Update (verb) will update the transport zone"""
+        uri = common.genuri('transport-zone', self.uuid)
+        return super(TransportZone, self)._action('PUT', uri)
+
+    @requireuuid
+    def read(self):
+        """Read (verb) will read the transport zone config"""
+        uri = common.genuri('transport-zone', self.uuid)
+        return super(TransportZone, self)._action('GET', uri)
+
+    @requireuuid
+    def delete(self):
+        """Delete (verb) will delete the transport zone"""
+        uri = common.genuri('transport-zone', self.uuid)
+        return super(TransportZone, self)._action('DELETE', uri)
 
 
 class LSwitch(NVPEntity):
@@ -88,7 +122,7 @@ class LSwitch(NVPEntity):
         return self
 
     def transport_zones(self, zones):
-        """Will set/update the transport zones that the switch is a 'member' of
+        """Will set/update the transport zones that the switch is connected
         """
         #TODO: Soon
         return self
