@@ -69,6 +69,240 @@ class NVPEntity(core.Entity):
         return self.info
 
 
+class QOSQueue(NVPEntity):
+    def __init__(self, connection, uuid=None):
+        super(QOSQueue, self).__init__(connection)
+        self.uuid = uuid
+
+    def _unroll(self):
+        super(QOSQueue, self)._unroll()
+        return self.info
+
+    def create(self):
+        """Create (verb) will create the QoS queue"""
+        uri = common.genuri('lqueue')
+        return super(QOSQueue, self)._action('POST', uri)
+
+    def query(self):
+        """Returns the query object for the QoS queue"""
+        uri = common.genuri('lqueue')
+        queryobject = nvpquery.QOSQueueQuery(self.connection, uri)
+        return queryobject
+
+    @requireuuid
+    def update(self):
+        """Update (verb) will update the QoS queue"""
+        uri = common.genuri('lqueue', self.uuid)
+        return super(QOSQueue, self)._action('PUT', uri)
+
+    @requireuuid
+    def read(self):
+        """Read (verb) will read the QoS queue config"""
+        uri = common.genuri('lqueue', self.uuid)
+        return super(QOSQueue, self)._action('GET', uri)
+
+    @requireuuid
+    def delete(self):
+        """Delete (verb) will delete the QoS queue"""
+        uri = common.genuri('lqueue', self.uuid)
+        return super(QOSQueue, self)._action('DELETE', uri)
+
+
+class SecurityProfile(NVPEntity):
+    def __init__(self, connection, uuid=None):
+        super(SecurityProfile, self).__init__(connection)
+        self.uuid = uuid
+
+    def _unroll(self):
+        super(SecurityProfile, self)._unroll()
+        return self.info
+
+    def create(self):
+        """Create (verb) will create the security profile"""
+        uri = common.genuri('security-profile')
+        return super(SecurityProfile, self)._action('POST', uri)
+
+    def query(self):
+        """Returns the query object for the security profile"""
+        uri = common.genuri('security-profile')
+        queryobject = nvpquery.SecurityProfileQuery(self.connection, uri)
+        return queryobject
+
+    @requireuuid
+    def update(self):
+        """Update (verb) will update the security profile"""
+        uri = common.genuri('security-profile', self.uuid)
+        return super(SecurityProfile, self)._action('PUT', uri)
+
+    @requireuuid
+    def read(self):
+        """Read (verb) will read the security profile config"""
+        uri = common.genuri('security-profile', self.uuid)
+        return super(SecurityProfile, self)._action('GET', uri)
+
+    @requireuuid
+    def delete(self):
+        """Delete (verb) will delete the security profile"""
+        uri = common.genuri('security-profile', self.uuid)
+        return super(SecurityProfile, self)._action('DELETE', uri)
+
+
+class LRouter(NVPEntity):
+    def __init__(self, connection, uuid=None):
+        super(LRouter, self).__init__(connection)
+        self.uuid = uuid
+
+    def _unroll(self):
+        super(LRouter, self)._unroll()
+        return self.info
+
+    def create(self):
+        """Create (verb) will create the logical router"""
+        uri = common.genuri('lrouter')
+        return super(LRouter, self)._action('POST', uri)
+
+    def query(self):
+        """Returns the query object for the logical router"""
+        uri = common.genuri('lrouter')
+        queryobject = nvpquery.LRouterQuery(self.connection, uri)
+        return queryobject
+
+    @requireuuid
+    def update(self):
+        """Update (verb) will update the logical router"""
+        uri = common.genuri('lrouter', self.uuid)
+        return super(LRouter, self)._action('PUT', uri)
+
+    @requireuuid
+    def read(self):
+        """Read (verb) will read the logical router config"""
+        uri = common.genuri('lrouter', self.uuid)
+        return super(LRouter, self)._action('GET', uri)
+
+    @requireuuid
+    def delete(self):
+        """Delete (verb) will delete the logical router"""
+        uri = common.genuri('lrouter', self.uuid)
+        return super(LRouter, self)._action('DELETE', uri)
+
+
+class TransportNode(NVPEntity):
+    def __init__(self, connection, uuid=None):
+        super(TransportNode, self).__init__(connection)
+        self.uuid = uuid
+
+    def _unroll(self):
+        super(TransportNode, self)._unroll()
+        return self.info
+
+    def create(self):
+        """Create (verb) will create the transport node"""
+        uri = common.genuri('transport-node')
+        return super(TransportNode, self)._action('POST', uri)
+
+    def query(self):
+        """Returns the query object for the transport node"""
+        uri = common.genuri('transport-node')
+        queryobject = nvpquery.TransportNodeQuery(self.connection, uri)
+        return queryobject
+
+    @requireuuid
+    def update(self):
+        """Update (verb) will update the transport node"""
+        uri = common.genuri('transport-node', self.uuid)
+        return super(TransportNode, self)._action('PUT', uri)
+
+    @requireuuid
+    def read(self):
+        """Read (verb) will read the transport node config"""
+        uri = common.genuri('transport-node', self.uuid)
+        return super(TransportNode, self)._action('GET', uri)
+
+    @requireuuid
+    def delete(self):
+        """Delete (verb) will delete the transport node"""
+        uri = common.genuri('transport-node', self.uuid)
+        return super(TransportNode, self)._action('DELETE', uri)
+
+
+class MDIService(NVPEntity):
+    def __init__(self, connection, uuid=None):
+        super(MDIService, self).__init__(connection)
+        self.uuid = uuid
+
+    def _unroll(self):
+        super(MDIService, self)._unroll()
+        return self.info
+
+    def create(self):
+        """Create (verb) will create the MDI Service"""
+        uri = common.genuri('domain-interconnect-service')
+        return super(MDIService, self)._action('POST', uri)
+
+    def query(self):
+        """Returns the query object for the MDI Service"""
+        uri = common.genuri('domain-interconnect-service')
+        queryobject = nvpquery.MDIServiceQuery(self.connection, uri)
+        return queryobject
+
+    @requireuuid
+    def update(self):
+        """Update (verb) will update the MDI Service"""
+        uri = common.genuri('domain-interconnect-service', self.uuid)
+        return super(MDIService, self)._action('PUT', uri)
+
+    @requireuuid
+    def read(self):
+        """Read (verb) will read the MDI Service config"""
+        uri = common.genuri('domain-interconnect-service', self.uuid)
+        return super(MDIService, self)._action('GET', uri)
+
+    @requireuuid
+    def delete(self):
+        """Delete (verb) will delete the MDI Service"""
+        uri = common.genuri('domain-interconnect-service', self.uuid)
+        return super(MDIService, self)._action('DELETE', uri)
+
+
+class GatewayService(NVPEntity):
+    def __init__(self, connection, uuid=None):
+        super(GatewayService, self).__init__(connection)
+        self.uuid = uuid
+
+    def _unroll(self):
+        super(GatewayService, self)._unroll()
+        return self.info
+
+    def create(self):
+        """Create (verb) will create the Gateway Service"""
+        uri = common.genuri('gateway-service')
+        return super(GatewayService, self)._action('POST', uri)
+
+    def query(self):
+        """Returns the query object for the Gateway Service"""
+        uri = common.genuri('gateway-service')
+        queryobject = nvpquery.GatewayServiceQuery(self.connection, uri)
+        return queryobject
+
+    @requireuuid
+    def update(self):
+        """Update (verb) will update the Gateway Service"""
+        uri = common.genuri('gateway-service', self.uuid)
+        return super(GatewayService, self)._action('PUT', uri)
+
+    @requireuuid
+    def read(self):
+        """Read (verb) will read the Gateway Service config"""
+        uri = common.genuri('gateway-service', self.uuid)
+        return super(GatewayService, self)._action('GET', uri)
+
+    @requireuuid
+    def delete(self):
+        """Delete (verb) will delete the Gateway Service"""
+        uri = common.genuri('gateway-service', self.uuid)
+        return super(GatewayService, self)._action('DELETE', uri)
+
+
 class TransportZone(NVPEntity):
 
     def __init__(self, connection, uuid=None):

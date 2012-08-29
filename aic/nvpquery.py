@@ -95,10 +95,46 @@ class NVPEntityQuery(NVPBaseQuery):
         return results
 
 
+class QOSQueueQuery(NVPEntityQuery):
+
+    def results(self):
+        return super(QOSQueueQuery, self).results()
+
+
+class SecurityProfileQuery(NVPEntityQuery):
+
+    def results(self):
+        return super(SecurityProfileQuery, self).results()
+
+
+class LRouterQuery(NVPEntityQuery):
+
+    def results(self):
+        return super(LRouterQuery, self).results()
+
+
+class TransportNodeQuery(NVPEntityQuery):
+
+    def results(self):
+        return super(TransportNodeQuery, self).results()
+
+
+class MDIServiceQuery(NVPEntityQuery):
+
+    def results(self):
+        return super(MDIServiceQuery, self).results()
+
+
 class TransportZoneQuery(NVPEntityQuery):
 
     def results(self):
         return super(TransportZoneQuery, self).results()
+
+
+class GatewayServiceQuery(NVPEntityQuery):
+
+    def results(self):
+        return super(GatewayServiceQuery, self).results()
 
 
 class LSwitchQuery(NVPEntityQuery):
