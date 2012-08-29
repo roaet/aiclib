@@ -52,6 +52,10 @@ class Connection(core.CoreLib):
         entity = nvpentity.QOSQueue(self, uuid=uuidvalue)
         return entity
 
+    def securityrule(self, ethertype):
+        entity = nvpentity.SecurityRule(ethertype)
+        return entity
+
     def securityprofile(self, uuid=None):
         uuidvalue = grab_uuid_of_type(uuid, None)
         entity = nvpentity.SecurityProfile(self, uuid=uuidvalue)
@@ -65,11 +69,6 @@ class Connection(core.CoreLib):
     def transportnode(self, uuid=None):
         uuidvalue = grab_uuid_of_type(uuid, None)
         entity = nvpentity.TransportNode(self, uuid=uuidvalue)
-        return entity
-
-    def mdiservice(self, uuid=None):
-        uuidvalue = grab_uuid_of_type(uuid, None)
-        entity = nvpentity.MDIService(self, uuid=uuidvalue)
         return entity
 
     def gatewayservice(self, uuid=None):

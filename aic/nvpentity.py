@@ -70,7 +70,6 @@ class NVPEntity(core.Entity):
 
 
 class QOSQueue(NVPEntity):
-    #TODO: Basic support requires entity specific features on creation
     #TODO: Add all entity specific features
     def __init__(self, connection, uuid=None):
         super(QOSQueue, self).__init__(connection)
@@ -80,6 +79,50 @@ class QOSQueue(NVPEntity):
         super(QOSQueue, self)._unroll()
         return self.info
 
+    def dscp(self, value):
+        """IP header DSCP value
+
+        Arguments:
+        value -- integer between 0 and 63
+        """
+        if value < 0 or value > 63:
+            raise AttributeError("DSCP value out of range")
+        self.info['dscp'] = value
+        return self
+
+    def maxbw_rate(self, rate):
+        """Maximum bitrate for queue in kbps
+
+        Arguments:
+        rate -- positive integer
+        """
+        if rate < 0:
+            raise AttributeError("Rate must be positive")
+        self.info['max_bandwidth_rate'] = rate
+        return self
+
+    def minbw_rate(self, rate):
+        """Minimum bitrate for queue in kbps
+
+        Arguments:
+        rate -- positive integer
+        """
+        if rate < 0:
+            raise AttributeError("Rate must be positive")
+        self.info['min_bandwidth_rate'] = rate
+        return self
+
+    def qos_marking(self, marking):
+        """Will set the DSCP field.
+
+        Arguments:
+        marking -- string that can be 'trusted' or 'untrusted'
+        """
+        if marking != 'trusted' or marking != 'untrusted':
+            raise AttributeError("Marking can be 'trusted' or 'untrusted'")
+        self.info['qos_marking']
+        return self
+
     def create(self):
         """Create (verb) will create the QoS queue"""
         uri = common.genuri('lqueue')
@@ -88,6 +131,13 @@ class QOSQueue(NVPEntity):
     def query(self):
         """Returns the query object for the QoS queue"""
         uri = common.genuri('lqueue')
+        queryobject = nvpquery.QOSQueueQuery(self.connection, uri)
+        return queryobject
+
+    def query_by_switch(self, switchuuid):
+        """Returns the query object for all queues on all ports of the switch
+        """
+        uri = common.genuri('lswitch', switchuuid, 'lqueue')
         queryobject = nvpquery.QOSQueueQuery(self.connection, uri)
         return queryobject
 
@@ -110,6 +160,46 @@ class QOSQueue(NVPEntity):
         return super(QOSQueue, self)._action('DELETE', uri)
 
 
+class SecurityRule(object):
+    """Utility class for SecurityProfile's rules"""
+    #TODO: Needs to be tested for convert to JSON
+
+    def __init__(self, ethertype, ip_prefix=None, port_range_max=None,
+                 port_range_min=None, profile_uuid=None, protocol=None):
+        if ethertype != 4 and ethertype != 6:
+            raise AttributeError("Ethertype must be 4 or 6")
+        self.info = {}
+        self.info['ethertype'] = ethertype
+
+    def ip_prefix(self, prefix):
+        self.info['ip_prefix'] = prefix
+        return self
+
+    def port_range_max(self, port_range):
+        if port_range < 0 or port_range > 65535:
+            raise AttributeError("Max port range is out of range")
+        self.info['port_range_max'] = port_range
+
+    def port_range_min(self, port_range):
+        if port_range < 0 or port_range > 65535:
+            raise AttributeError("Min port range is out of range")
+        self.info['port_range_min'] = port_range
+        return self
+
+    def profile_uuid(self, uuid):
+        self.info['profile_uuid'] = uuid
+        return self
+
+    def protocol(self, protid):
+        if protid < 0 or protid > 255:
+            raise AttributeError("IP protocol number out of range")
+        self.info['protocol'] = protid
+        return self
+
+    def __dict__(self):
+        return self.info
+
+
 class SecurityProfile(NVPEntity):
     #TODO: Add all entity specific features
     def __init__(self, connection, uuid=None):
@@ -119,6 +209,40 @@ class SecurityProfile(NVPEntity):
     def _unroll(self):
         super(SecurityProfile, self)._unroll()
         return self.info
+
+    def port_egress_rules(self, rulelist):
+        """Sets rules for outbound traffic. All outbound traffic not matching
+        the specified rules will be dropped.
+
+        Arguments:
+        rulelist -- a list of SecurityRule objects
+        If a single SecurityRule object is given it will be put in a list
+        for you
+        """
+        if not type(rulelist) is list:
+            rulelist = [rulelist]
+        if False in [isinstance(rule, SecurityRule) for rule in rulelist]:
+            raise AttributeError("SecurityRule objects required")
+        outlist = [rule.__dict__() for rule in rulelist]
+        self.info['logical_port_egress_rules'] = outlist
+        return self
+
+    def port_ingress_rules(self, rulelist):
+        """Sets rules for inbound traffic. All inbound traffic not matching
+        the specified rules will be dropped.
+
+        Arguments:
+        rulelist -- a list of SecurityRule objects
+        If a single SecurityRule object is given it will be put in a list
+        for you
+        """
+        if not type(rulelist) is list:
+            rulelist = [rulelist]
+        if False in [isinstance(rule, SecurityRule) for rule in rulelist]:
+            raise AttributeError("SecurityRule objects required")
+        outlist = [rule.__dict__() for rule in rulelist]
+        self.info['logical_port_ingress_rules'] = outlist
+        return self
 
     def create(self):
         """Create (verb) will create the security profile"""
@@ -231,46 +355,6 @@ class TransportNode(NVPEntity):
         return super(TransportNode, self)._action('DELETE', uri)
 
 
-class MDIService(NVPEntity):
-    #TODO: Add all entity specific features
-    def __init__(self, connection, uuid=None):
-        super(MDIService, self).__init__(connection)
-        self.uuid = uuid
-
-    def _unroll(self):
-        super(MDIService, self)._unroll()
-        return self.info
-
-    def create(self):
-        """Create (verb) will create the MDI Service"""
-        uri = common.genuri('domain-interconnect-service')
-        return super(MDIService, self)._action('POST', uri)
-
-    def query(self):
-        """Returns the query object for the MDI Service"""
-        uri = common.genuri('domain-interconnect-service')
-        queryobject = nvpquery.MDIServiceQuery(self.connection, uri)
-        return queryobject
-
-    @requireuuid
-    def update(self):
-        """Update (verb) will update the MDI Service"""
-        uri = common.genuri('domain-interconnect-service', self.uuid)
-        return super(MDIService, self)._action('PUT', uri)
-
-    @requireuuid
-    def read(self):
-        """Read (verb) will read the MDI Service config"""
-        uri = common.genuri('domain-interconnect-service', self.uuid)
-        return super(MDIService, self)._action('GET', uri)
-
-    @requireuuid
-    def delete(self):
-        """Delete (verb) will delete the MDI Service"""
-        uri = common.genuri('domain-interconnect-service', self.uuid)
-        return super(MDIService, self)._action('DELETE', uri)
-
-
 class GatewayService(NVPEntity):
     #TODO: Basic support requires entity specific features on creation
     #TODO: Add all entity specific features
@@ -313,7 +397,6 @@ class GatewayService(NVPEntity):
 
 
 class TransportZone(NVPEntity):
-    #TODO: Add all entity specific features
 
     def __init__(self, connection, uuid=None):
         super(TransportZone, self).__init__(connection)
