@@ -179,6 +179,7 @@ class SecurityRule(object):
         if port_range < 0 or port_range > 65535:
             raise AttributeError("Max port range is out of range")
         self.info['port_range_max'] = port_range
+        return self
 
     def port_range_min(self, port_range):
         if port_range < 0 or port_range > 65535:
@@ -196,7 +197,7 @@ class SecurityRule(object):
         self.info['protocol'] = protid
         return self
 
-    def __dict__(self):
+    def to_dict(self):
         return self.info
 
 
@@ -223,7 +224,7 @@ class SecurityProfile(NVPEntity):
             rulelist = [rulelist]
         if False in [isinstance(rule, SecurityRule) for rule in rulelist]:
             raise AttributeError("SecurityRule objects required")
-        outlist = [rule.__dict__() for rule in rulelist]
+        outlist = [rule.to_dict() for rule in rulelist]
         self.info['logical_port_egress_rules'] = outlist
         return self
 
@@ -240,7 +241,7 @@ class SecurityProfile(NVPEntity):
             rulelist = [rulelist]
         if False in [isinstance(rule, SecurityRule) for rule in rulelist]:
             raise AttributeError("SecurityRule objects required")
-        outlist = [rule.__dict__() for rule in rulelist]
+        outlist = [rule.to_dict() for rule in rulelist]
         self.info['logical_port_ingress_rules'] = outlist
         return self
 
@@ -272,47 +273,6 @@ class SecurityProfile(NVPEntity):
         """Delete (verb) will delete the security profile"""
         uri = common.genuri('security-profile', self.uuid)
         return super(SecurityProfile, self)._action('DELETE', uri)
-
-
-class LRouter(NVPEntity):
-    #TODO: Basic support requires entity specific features on creation
-    #TODO: Add all entity specific features
-    def __init__(self, connection, uuid=None):
-        super(LRouter, self).__init__(connection)
-        self.uuid = uuid
-
-    def _unroll(self):
-        super(LRouter, self)._unroll()
-        return self.info
-
-    def create(self):
-        """Create (verb) will create the logical router"""
-        uri = common.genuri('lrouter')
-        return super(LRouter, self)._action('POST', uri)
-
-    def query(self):
-        """Returns the query object for the logical router"""
-        uri = common.genuri('lrouter')
-        queryobject = nvpquery.LRouterQuery(self.connection, uri)
-        return queryobject
-
-    @requireuuid
-    def update(self):
-        """Update (verb) will update the logical router"""
-        uri = common.genuri('lrouter', self.uuid)
-        return super(LRouter, self)._action('PUT', uri)
-
-    @requireuuid
-    def read(self):
-        """Read (verb) will read the logical router config"""
-        uri = common.genuri('lrouter', self.uuid)
-        return super(LRouter, self)._action('GET', uri)
-
-    @requireuuid
-    def delete(self):
-        """Delete (verb) will delete the logical router"""
-        uri = common.genuri('lrouter', self.uuid)
-        return super(LRouter, self)._action('DELETE', uri)
 
 
 class TransportNode(NVPEntity):
