@@ -4,14 +4,14 @@ Created: August 27, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 
-from aic import test
-import aic
+from aiclib import test
+import aiclib
 
 
 class TestLogicalSwitch(test.TestCase):
 
     def setUp(self):
-        self.nvp = aic.nvp.Connection("https://nvp")
+        self.nvp = aiclib.Connection("https://nvp")
         self.switch = self.nvp.lswitch().create()
         self.switchport = self.nvp.lswitch_port(self.switch).create()
 

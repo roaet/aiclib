@@ -4,14 +4,14 @@ Created: August 29, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 
-from aic import test
-import aic
+from aiclib import test
+import aiclib
 
 
 class TestTransportZone(test.TestCase):
 
     def setUp(self):
-        self.nvp = aic.nvp.Connection("https://nvp")
+        self.nvp = aiclib.Connection("https://nvp")
         self.zone = self.nvp.zone().create()
 
     def tearDown(self):
