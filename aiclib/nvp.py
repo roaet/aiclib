@@ -66,6 +66,11 @@ class Connection(core.CoreLib):
         entity = nvpentity.LRouter(self, uuid=uuidvalue)
         return entity
 
+    def transportconnector(self, uuid, connector_type):
+        uuidvalue = grab_uuid_of_type(uuid, None)
+        entity = nvpentity.TransportConnector(uuidvalue, connector_type)
+        return entity
+
     def transportnode(self, uuid=None):
         uuidvalue = grab_uuid_of_type(uuid, None)
         entity = nvpentity.TransportNode(self, uuid=uuidvalue)

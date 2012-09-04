@@ -70,7 +70,8 @@ class NVPEntity(core.Entity):
 
 
 class QOSQueue(NVPEntity):
-    #TODO: Add all entity specific features
+    # All queue specific functionality has been implemented
+    # TODO: it now needs to be tested
     def __init__(self, connection, uuid=None):
         super(QOSQueue, self).__init__(connection)
         self.uuid = uuid
@@ -202,7 +203,8 @@ class SecurityRule(object):
 
 
 class SecurityProfile(NVPEntity):
-    #TODO: Add all entity specific features
+    # All security profile specific functionality has been implemented
+    #TODO: It now needs to be tested
     def __init__(self, connection, uuid=None):
         super(SecurityProfile, self).__init__(connection)
         self.uuid = uuid
@@ -275,8 +277,28 @@ class SecurityProfile(NVPEntity):
         return super(SecurityProfile, self)._action('DELETE', uri)
 
 
+class TransportConnector(object):
+    GRE = 'GREConnector'
+    STT = 'STTConnector'
+    BRIDGE = 'BridgeConnector'
+    SECGRE = 'IPsecGREConnector'
+    SECSTT = 'IPsecSTTConnector'
+    _valid_entries = [GRE, STT, BRIDGE, SECGRE, SECSTT]
+
+    def __init__(self, tzone_uuid, connector_type):
+        if not connector_type in TransportConnector._valid_entries:
+            raise AttributeError("connector_type is invalid")
+        self.info = {}
+        self.info['tzone_uuid'] = tzone_uuid
+        self.info['connector_type'] = connector_type
+
+    def to_dict(self):
+        return self.info
+
+
 class TransportNode(NVPEntity):
-    #TODO: Add all entity specific features
+    #All node specific functionality has been implemented
+    #TODO: It now needs to be tested
     def __init__(self, connection, uuid=None):
         super(TransportNode, self).__init__(connection)
         self.uuid = uuid
@@ -284,6 +306,62 @@ class TransportNode(NVPEntity):
     def _unroll(self):
         super(TransportNode, self)._unroll()
         return self.info
+
+    def admin_status_enabled(self, flag):
+        """Will set the admin enabled status of the node"""
+        self.info['admin_status_enabled'] = flag
+        return self
+
+    def credential(self, mgmt_credentials):
+        """Will set the credential of the node
+
+        Arguments:
+        mgmt_credentials -- either MgmtAddrCredential, or
+                            SecurityCertificateCredential string
+        """
+        self.info['credential'] = mgmt_credentials
+        return self
+
+    def integration_bridge(self, bridgeid):
+        """Used to connect logical and transport networks"""
+        if len(bridgeid) > 40:
+            raise AttributeError("Bridge id must be <= 40 characters")
+        self.info['intergration_bridge_id'] = bridgeid
+        return self
+
+    def rendezvous_client(self, flag):
+        """Indicates if node management connections may be established
+        via a rendezvous server"""
+        self.info['mgmt_rendezvous_client'] = flag
+        return self
+
+    def rendezvous_server(self, flag):
+        """indicates if node should act as rendezvous server"""
+        self.info['mgmt_rendezvous_server'] = flag
+        return self
+
+    def transport_connectors(self, connector_list):
+        """Will connect the node to transport zones with a given connector
+        of the specified type.
+
+        Arguments:
+        connector_list -- a list of TransportConnector objects; if a single
+                          object is given it will be put into a list for you
+        """
+        if not type(connector_list) is list:
+            connector_list = [connector_list]
+        if False in [isinstance(conn, TransportConnector) for conn in
+                     connector_list]:
+            raise AttributeError("TransportConnector objects required")
+        outlist = [conn.to_dict() for rule in connector_list]
+        self.info['transport_connectors'] = outlist
+        return self
+
+    def zone_forwarding(self, flag):
+        """Indicates if node may be used to forward packets between
+        transport zones."""
+        self.info['zone_fowarding'] = flag
+        return self
 
     def create(self):
         """Create (verb) will create the transport node"""
@@ -295,6 +373,12 @@ class TransportNode(NVPEntity):
         uri = common.genuri('transport-node')
         queryobject = nvpquery.TransportNodeQuery(self.connection, uri)
         return queryobject
+
+    @requireuuid
+    def status(self):
+        """Will get the status of the transport node"""
+        uri = common.genuri('transport-node', self.uuid, 'status')
+        return super(TransportNode, self)._action('GET', uri)
 
     @requireuuid
     def update(self):

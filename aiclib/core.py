@@ -126,6 +126,7 @@ class Connection(object):
 
     def request(self, method, apicall, generationnumber=0, body=None):
         retrypause = 0
+        internalramp = 10
         r = None
         for retryCount in xrange(self.maxRetries):
             self.generationnumber = generationnumber
@@ -144,10 +145,20 @@ class Connection(object):
                     self._handle_error(r)
                     continue
                 except EnvironmentError:
-                    logger.info("Waiting for server: ",
-                                r.headers['retry-after'])
-                    retrypause = r.headers['retry-after']
-                    time.sleep(retrypause)
+                    if 'retry-after' in r.headers:
+                        logger.info("Waiting for server: ",
+                                    r.headers['retry-after'])
+                        retrypause = r.headers['retry-after']
+                        time.sleep(retrypause)
+                    else:
+                        import sys
+                        print >> sys.stderr, "!"
+                        print >> sys.stderr, "%s" % r.headers
+                        logger.info("Headers missing retry delay")
+                        self.connection.close()
+
+                        time.sleep(internalramp)
+                        internalramp += .5
                 except:
                     logger.error("Unhandled error:")
                     raise
