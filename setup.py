@@ -8,6 +8,9 @@ setuptools.setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 2.7', ],
+    install_requires=[
+        'urllib3',
+    ],
     keywords='kwantum',
     author='Justin Hammond',
     author_email='justin.hammond@rackspace.com',
