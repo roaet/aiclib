@@ -7,6 +7,10 @@ Created on August 17, 2012
 import json
 import log
 import time
+try:
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlencode
 
 import urllib3
 from urllib3.exceptions import MaxRetryError
@@ -128,13 +132,17 @@ class Connection(object):
         retrypause = 0
         internalramp = 10
         r = None
+        url = apicall
         for retryCount in xrange(self.maxRetries):
             self.generationnumber = generationnumber
             jsonBody = json.dumps(body)
             if method in self._encode_url_methods:
-                r = self.connection.request_encode_url(method, apicall,
-                                                       fields=body,
-                                                       headers=self.headers)
+                logger.info("Encoded URL: %s" % urlencode(body))
+                url += '?' + urlencode(body, doseq=True)
+                r = self.connection.urlopen(method, url, headers=self.headers)
+                #r = self.connection.request_encode_url(method, apicall,
+                #                                       fields=body,
+                #                                       headers=self.headers)
             else:
                 r = self.connection.urlopen(method, apicall,
                                             jsonBody,
