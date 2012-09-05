@@ -11,6 +11,16 @@ import re
 logger = log.get_logger(__name__)
 
 _version = 'ws.v1'
+stringoperators = ['=', '!=', '~', '!~']
+booleanoperators = ['=', '!=', '<', '>', '<=', '>=']
+
+
+def is_stringop(stringop):
+    return stringop in stringoperators
+
+
+def is_booleanop(boolop):
+    return boolop in booleanoperators
 
 
 def genuri(*args):

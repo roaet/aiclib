@@ -657,6 +657,13 @@ class LSwitchPort(NVPEntity):
         uri = common.genuri('lswitch', self.lswitch_uuid, 'lport')
         return super(LSwitchPort, self)._action("POST", uri)
 
+    def query(self):
+        """Returns the query object for logical switch ports
+        """
+        uri = common.genuri('lswitch', self.lswitch_uuid, 'lport')
+        queryobject = nvpquery.LSwitchPortQuery(self.connection, uri)
+        return queryobject
+
     @requireuuid
     def read(self):
         """Read (verb) will read the logical port's configuration"""

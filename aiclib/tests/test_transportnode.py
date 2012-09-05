@@ -4,14 +4,14 @@ Created: August 30, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 
-from aic import test
-import aic
+from aiclib import test
+import aiclib
 
 
 class TestTransportNode(test.TestCase):
 
     def setUp(self):
-        self.nvp = aic.nvp.Connection("https://nvp")
+        self.nvp = aiclib.nvp.Connection("https://nvp")
         self.tnode = self.nvp.transportnode().create()
 
     def tearDown(self):
