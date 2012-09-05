@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(
-    name='aic',
+    name='aiclib',
     version="0.1",
     classifiers=[
         'Development Status :: 4 - Beta',
