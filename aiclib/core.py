@@ -172,7 +172,7 @@ class Connection(object):
                     raise
             self._handle_headers(r)
             return r
-        raise MaxRetryError('408', 'Maxed retry attempts')
+        raise AICException('408', 'Request Timeout -- Maxed retry attempts')
 
     def _handle_headers(self, resp):
         return
@@ -189,7 +189,7 @@ class Connection(object):
         comment = "%s: %s" % (resp.reason, resp.data)
         if resp.status == 400:
             logger.error("Bad request")
-            raise TypeError('400', comment)
+            raise AICException('400', comment)
 
         elif resp.status == 401:
             logger.info("Authorization expired; renewing")
@@ -197,24 +197,32 @@ class Connection(object):
             authstatus = self._login(self.username, self.password)
             if not authstatus:
                 logger.error("Re-authorization failed.")
-                raise IOError('401', 'Unauthorized')
+                raise AICException('401', 'Unauthorized')
 
         elif resp.status == 403:
             logger.error("Access forbidden")
-            raise LookupError('403', comment)
+            raise AICException('403', comment)
 
         elif resp.status == 404:
             logger.error("Resource not found")
-            raise LookupError('404', comment)
+            raise AICException('404', comment)
 
         elif resp.status == 409:
             logger.error("Conflicting configuration")
-            raise LookupError('409', comment)
+            raise AICException('409', comment)
 
         elif resp.status == 500:
             logger.error("Internal server error")
-            raise SystemError('500', comment)
+            raise AICException('500', comment)
 
         elif resp.status == 503:
             logger.error("Service unavailable")
-            raise EnvironmentError('503', comment)
+            raise AICException('503', comment)
+
+
+class AICException(Exception):
+
+    def __init__(self, error_code, message, **kwargs):
+        super(AICException, self).__init__(kwargs)
+        self.code = error_code
+        self.message = message

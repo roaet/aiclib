@@ -100,7 +100,21 @@ class Connection(core.CoreLib):
     def _action(self, entity, method, resource):
         """Will inject generation ID into the JSON result object if it exists
         """
-        r = super(Connection, self)._action(entity, method, resource)
+        try:
+            r = super(Connection, self)._action(entity, method, resource)
+        except core.AICException as e:
+            if e.code == 400 or e.code == 500:
+                raise NVPException()
+            elif e.code == 403:
+                raise Forbidden()
+            elif e.code == 404:
+                raise ResourceNotFound()
+            elif e.code == 408:
+                raise RequestTimeout()
+            elif e.code == 409:
+                raise Conflict()
+            elif e.code == 503:
+                raise ServiceUnavailable()
         logger.info("Response headers: %s" % r.headers)
         responselength = 0
         generationid = None
@@ -143,3 +157,45 @@ class NVPFunction(core.Entity):
     def read_schema(self, schema_name):
         uri = common.genuri("schema", schema_name)
         return super(NVPFunction, self)._action('GET', uri)
+
+
+class NVPException(Exception):
+    """This Exception class was created to duplicate the exception resolution
+    available in legacy NvpApiClient.
+    """
+    message = "An unknown exception occurred."
+
+    def __init__(self, **kwargs):
+        try:
+            self._error_string = self.message % kwargs
+
+        except Exception:
+            self._error_string = self.message
+
+    def __str__(self):
+        return self._error_string
+
+
+class UnauthorizedRequest(NVPException):
+    message = "Server denied session's authentication credentials."
+
+
+class ResourceNotFound(NVPException):
+    message = "An entity referenced in the request was not found."
+
+
+class Conflict(NVPException):
+    message = "Request conflicts with configuration on a different entity."
+
+
+class ServiceUnavailable(NVPException):
+    message = ("Request could not be completed because the associated "
+               "resource could not be reached")
+
+
+class Forbidden(NVPException):
+    message = "The request is forbidden from access the referenced resource"
+
+
+class RequestTimeout(NVPException):
+    message = "The request has timed out."
