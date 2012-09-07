@@ -6,6 +6,7 @@ Created on August 23, 2012
 
 import json
 import log
+import urllib3
 
 import common
 import core
@@ -100,6 +101,7 @@ class Connection(core.CoreLib):
     def _action(self, entity, method, resource):
         """Will inject generation ID into the JSON result object if it exists
         """
+        r = None
         try:
             r = super(Connection, self)._action(entity, method, resource)
         except core.AICException as e:
@@ -115,6 +117,10 @@ class Connection(core.CoreLib):
                 raise Conflict()
             elif e.code == 503:
                 raise ServiceUnavailable()
+            else:
+                raise NVPException()
+        except urllib3.exceptions.HTTPError:
+            raise NVPException()
         logger.info("Response headers: %s" % r.headers)
         responselength = 0
         generationid = None
