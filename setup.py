@@ -11,6 +11,7 @@ setuptools.setup(
     install_requires=[
         'urllib3',
     ],
+    packages=setuptools.find_packages(),
     keywords='kwantum',
     author='Justin Hammond',
     author_email='justin.hammond@rackspace.com',
