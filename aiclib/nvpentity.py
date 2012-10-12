@@ -4,13 +4,13 @@ Created on August 22, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 
-import log
+import logging
 
 import common
 import core
 import nvpquery
 
-logger = log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def requireuuid(fn):

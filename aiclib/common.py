@@ -4,11 +4,11 @@ Created on August 21, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 import calendar
-import log
+import logging
 import re
 
 
-logger = log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 _version = 'ws.v1'
 stringoperators = ['=', '!=', '~', '!~']

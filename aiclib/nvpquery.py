@@ -4,12 +4,12 @@ Created on August 22, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 
-import log
+import logging
 
 import common
 import core
 
-logger = log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class NVPBaseQuery(core.Query):

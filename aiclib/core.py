@@ -5,7 +5,7 @@ Created on August 17, 2012
 """
 
 import json
-import log
+import logging
 import errno
 import socket
 import time
@@ -20,7 +20,7 @@ from urllib3.exceptions import MaxRetryError
 import common
 
 
-logger = log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class CoreLib(object):

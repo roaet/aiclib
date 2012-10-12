@@ -5,14 +5,14 @@ Created on August 23, 2012
 """
 
 import json
-import log
+import logging
 import urllib3
 
 import common
 import core
 import nvpentity
 
-logger = log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 _version = 'ws.v1'
 
 
@@ -119,8 +119,6 @@ class Connection(core.CoreLib):
                 raise ServiceUnavailable()
             else:
                 raise NVPException()
-        except urllib3.exceptions.HTTPError:
-            raise NVPException()
         logger.info("Response headers: %s" % r.headers)
         responselength = 0
         generationid = None
