@@ -16,5 +16,5 @@ setuptools.setup(
     author='Justin Hammond',
     author_email='justin.hammond@rackspace.com',
     license='Apache Software License',
-    zip_safe=True,
+    zip_safe=False,
 )
