@@ -150,7 +150,7 @@ class LSwitchPortQuery(NVPEntityQuery):
         self.query['admin_status_enabled'] = 'true' if flag else 'false'
         return self
 
-    def attachment_bridgeid(self, string_operator, bridgeid):
+    def attachment_bridge_id(self, string_operator, bridgeid):
         """Uses string matching on bridgeid"""
         if not common.is_stringop(string_operator):
             raise AttributeError("string_operator is invalid")
@@ -158,76 +158,76 @@ class LSwitchPortQuery(NVPEntityQuery):
                                                        bridgeid)
         return self
 
-    def attachment_gwsvcuuid(self, string_operator, gwsvcuuid):
+    def attachment_gwsvc_uuid(self, string_operator, gwsvcuuid):
         """Uses string matching on gwsvcuuid"""
         if not common.is_stringop(string_operator):
             raise AttributeError("string_operator is invalid")
-        self.query['attachment_bridge_id'] = '%s%s' % (string_operator,
-                                                       gwsvcuuid)
+        self.query['attachment_gwsvc_uuid'] = '%s%s' % (string_operator,
+                                                        gwsvcuuid)
         return self
 
-    def attachment_nodename(self, string_operator, nodename):
+    def attachment_node_name(self, string_operator, nodename):
         """Uses string matching on nodename"""
         if not common.is_stringop(string_operator):
             raise AttributeError("string_operator is invalid")
-        self.query['attachment_bridge_id'] = '%s%s' % (string_operator,
+        self.query['attachment_node_name'] = '%s%s' % (string_operator,
                                                        nodename)
         return self
 
-    def attachment_nodeuuid(self, string_operator, nodeuuid):
+    def attachment_node_uuid(self, string_operator, nodeuuid):
         """Uses string matching on nodeuuid"""
         if not common.is_stringop(string_operator):
             raise AttributeError("string_operator is invalid")
-        self.query['attachment_bridge_id'] = '%s%s' % (string_operator,
+        self.query['attachment_node_uuid'] = '%s%s' % (string_operator,
                                                        nodeuuid)
         return self
 
-    def attachment_peerport(self, string_operator, peerport):
+    def attachment_peer_port_uuid(self, string_operator, peerport):
         """Uses string matching on peerport"""
         if not common.is_stringop(string_operator):
             raise AttributeError("string_operator is invalid")
-        self.query['attachment_bridge_id'] = '%s%s' % (string_operator,
-                                                       peerport)
+        self.query['attachment_peer_port_uuid'] = '%s%s' % (string_operator,
+                                                            peerport)
         return self
 
-    def attachment_vifmac(self, string_operator, vifmac):
+    def attachment_vif_mac(self, string_operator, vifmac):
         """Uses string matching on vifmac"""
         if not common.is_stringop(string_operator):
             raise AttributeError("string_operator is invalid")
-        self.query['attachment_bridge_id'] = '%s%s' % (string_operator,
-                                                       vifmac)
+        self.query['attachment_vid_mac'] = '%s%s' % (string_operator,
+                                                     vifmac)
         return self
 
-    def attachment_vifuuid(self, string_operator, vifuuid):
+    def attachment_vif_uuid(self, string_operator, vifuuid):
         """Uses string matching on vifuuid"""
         if not common.is_stringop(string_operator):
             raise AttributeError("string_operator is invalid")
-        self.query['attachment_bridge_id'] = '%s%s' % (string_operator,
-                                                       vifuuid)
+        self.query['attachment_vif_uuid'] = '%s%s' % (string_operator,
+                                                      vifuuid)
         return self
 
-    def attachment_zoneuuid(self, string_operator, zoneuuid):
+    def attachment_zone_uuid(self, string_operator, zoneuuid):
         """Uses string matching on zoneuuid"""
         if not common.is_stringop(string_operator):
             raise AttributeError("string_operator is invalid")
-        self.query['attachment_bridge_id'] = '%s%s' % (string_operator,
+        self.query['attachment_zone_uuid'] = '%s%s' % (string_operator,
                                                        zoneuuid)
         return self
 
-    def attachment_queueuuid(self, string_operator, queueuuid):
+    def queue_uuid(self, string_operator, queueuuid):
         """Uses string matching on queueuuid"""
         if not common.is_stringop(string_operator):
             raise AttributeError("string_operator is invalid")
-        self.query['attachment_bridge_id'] = '%s%s' % (string_operator,
-                                                       queueuuid)
+        self.query['queue_uuid'] = '%s%s' % (string_operator,
+                                             queueuuid)
         return self
 
-    def attachment_secuuid(self, string_operator, secuuid):
+    def security_profile_uuid(self, string_operator, secuuid):
         """Uses string matching on secuuid"""
         if not common.is_stringop(string_operator):
             raise AttributeError("string_operator is invalid")
-        self.query['attachment_bridge_id'] = '%s%s' % (string_operator,
-                                                       secuuid)
+        self.query['security_profile_uuid'] = '%s%s' % (string_operator,
+                                                        secuuid)
         return self
 
     def relations(self, relationslist):
