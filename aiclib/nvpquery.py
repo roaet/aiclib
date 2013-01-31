@@ -253,6 +253,11 @@ class LSwitchQuery(NVPEntityQuery):
         self.query['transport_zone_uuid'] = uid
         return self
 
+    def relations(self, relationslist):
+        """Make a comment"""
+        self.query['relations'] = relationslist
+        return self
+
     def results(self):
         #TODO: This may require some modifications at this level
         return super(LSwitchQuery, self).results()
