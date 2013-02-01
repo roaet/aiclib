@@ -194,7 +194,7 @@ class LSwitchPortQuery(NVPEntityQuery):
         """Uses string matching on vifmac"""
         if not common.is_stringop(string_operator):
             raise AttributeError("string_operator is invalid")
-        self.query['attachment_vid_mac'] = '%s%s' % (string_operator,
+        self.query['attachment_vif_mac'] = '%s%s' % (string_operator,
                                                      vifmac)
         return self
 
