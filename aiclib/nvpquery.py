@@ -24,6 +24,7 @@ import logging
 
 import common
 import core
+import log
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class NVPBaseQuery(core.Query):
 
     def __init__(self, aic_connection, resource):
         super(NVPBaseQuery, self).__init__(aic_connection, resource)
-        logger.info("Created NVPBaseQuery")
+        logging.debug("Created NVPBaseQuery")
         self.query['fields'] = '*'
 
     def fields(self, fieldlist):
@@ -50,7 +51,7 @@ class NVPEntityQuery(NVPBaseQuery):
 
     def __init__(self, aic_connection, resource):
         super(NVPEntityQuery, self).__init__(aic_connection, resource)
-        logger.info("Created NVPEntityQuery")
+        logging.debug("Created NVPEntityQuery")
         self.query['_page_length'] = 1000
         self.nextpage = None
 
