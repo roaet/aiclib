@@ -1,14 +1,13 @@
 import logging
 
 
-def get_logger(name):
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
+FMT = ("%(asctime)s %(process)d %(levelname)s %(name)s [-] %(message)s func"
+       " %(pathname)s:%(lineno)d")
 
-    #ch = logging.StreamHandler()
-    #ch.setLevel(logging.DEBUG)
-    #formatter = logging.Formatter(
-    #        '%(asctime)s - %(levelname)s - %(name)s - %(message)s')
-    #ch.setFormatter(formatter)
-    #logger.addHandler(ch)
+logging.basicConfig(format=FMT, level=logging.INFO)
+
+
+def get_logger(name):
+    #TODO(mdietz): we probably want to allow passing of a full logging config
+    logger = logging.getLogger(name)
     return logger
