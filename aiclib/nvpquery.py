@@ -8,6 +8,7 @@ import logging
 
 import common
 import core
+import log
 
 LOG = log.get_logger(__name__)
 
