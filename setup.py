@@ -29,8 +29,7 @@ setuptools.setup(
     install_requires=[
         'urllib3',
     ],
-    packages=setuptools.find_packages(exclude=['ex_setup', 'examples',
-                                               'tests']),
+    packages=['aiclib'],
     keywords='aiclib nvp',
     author='Ozone Networking (Team Johnnie)',
     author_email='justin.hammond@rackspace.com',
