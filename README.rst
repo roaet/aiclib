@@ -1,12 +1,18 @@
-kwantum
-=======
+======
+aiclib
+======
 
-Just some work on something that sounds like quantum
+A declarative system to consume the NVP api.
+
+Current Build Status
+====================
+.. image:: https://api.travis-ci.org/jkoelker/aiclib.png
+    :target: https://travis-ci.org/jkoelker/aiclib
 
 
-=======
 Use of AIC wrapper lib
-=======
+======================
+
 The AIC wrapper command, or sentence, consists of two
 parts:
 - An object and its parameters
@@ -30,9 +36,9 @@ are set during the declaration of the object.
 A verb works on the object and is always the last portion
 of a normal command.
 
-=======
+
 Querying using the wrapper lib
-=======
+==============================
 
 The exception to the normal command pattern is when a user
 wishes to query. A query works much like the typical use
@@ -45,13 +51,10 @@ The object stated in the command is what query is looking
 for. Parameters may be passed to the query to make the
 search more precise.
 
-========
 Extending the wrapper lib
-========
+=========================
 
 The creation of a custom entity requires that the entity,
 somewhere in its inheritance chain, inherit from
 core.Entity. For it to properly return responses from the
 server it also needs to overload unroll.
-
-
