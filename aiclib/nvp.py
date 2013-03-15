@@ -6,7 +6,6 @@ Created on August 23, 2012
 
 import json
 import logging
-import urllib3
 
 import common
 import core
@@ -22,13 +21,13 @@ def grab_uuid_of_type(text_or_dict, nvptype):
     errormsg = "Missing key (%s) from dictionary when expected."
     typeerror = "Incorrect type (%s); expected %s"
     if not 'uuid' in text_or_dict:
-        log.logging.error(errormsg % "uuid")
+        logger.error(errormsg % "uuid")
         raise TypeError(errormsg % "uuid")
     if nvptype and not 'type' in text_or_dict:
-        log.logging.error(errormsg % "type")
+        logger.error(errormsg % "type")
         raise TypeError(errormsg % "type")
         if text_or_dict['type'] != nvptype:
-            log.logging.error(typeerror % (text_or_dict['type'], nvptype))
+            logger.error(typeerror % (text_or_dict['type'], nvptype))
             raise TypeError(typeerror % (text_or_dict['type'], nvptype))
     return text_or_dict['uuid']
 

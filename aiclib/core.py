@@ -15,7 +15,6 @@ except ImportError:
     from urllib import urlencode
 
 import urllib3
-from urllib3.exceptions import MaxRetryError
 
 import common
 
@@ -42,8 +41,8 @@ class CoreLib(object):
         else:
             self.conn = poolmanager.connection_from_url(uri)
         self.connection = Connection(connection=self.conn,
-                                      username=username,
-                                      password=password)
+                                     username=username,
+                                     password=password)
 
     def _action(self, entity, method, resource):
         if not entity:
@@ -141,6 +140,7 @@ class Connection(object):
         internalramp = 10
         r = None
         url = apicall
+        # TODO(jkoelker) refactor this to use the retry kwarg to urlopen
         for retryCount in xrange(self.maxRetries):
             self.generationnumber = generationnumber
             jsonBody = json.dumps(body)
