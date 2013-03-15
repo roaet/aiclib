@@ -20,7 +20,7 @@ Created: August 27, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 
-from aiclib import tests
+import tests
 import aiclib
 
 
