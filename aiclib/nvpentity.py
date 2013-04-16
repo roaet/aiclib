@@ -64,7 +64,7 @@ class NVPEntity(core.Entity):
             taglist = [taglist]
         elif len(taglist) > 5:
             raise AttributeError("Tag list only supports up to 5 elements")
-        self.info['tags'] = taglist
+        self['tags'] = taglist
         return self
 
     def display_name(self, name):
@@ -77,12 +77,8 @@ class NVPEntity(core.Entity):
         """
         if len(name) > 40:
             raise AttributeError("Display name is greater than 40 characters")
-        self.info['display_name'] = name
+        self['display_name'] = name
         return self
-
-    def _unroll(self):
-        super(NVPEntity, self)._unroll()
-        return self.info
 
 
 class QOSQueue(NVPEntity):
@@ -92,10 +88,6 @@ class QOSQueue(NVPEntity):
         super(QOSQueue, self).__init__(connection)
         self.uuid = uuid
 
-    def _unroll(self):
-        super(QOSQueue, self)._unroll()
-        return self.info
-
     def dscp(self, value):
         """IP header DSCP value
 
@@ -104,7 +96,7 @@ class QOSQueue(NVPEntity):
         """
         if value < 0 or value > 63:
             raise AttributeError("DSCP value out of range")
-        self.info['dscp'] = value
+        self['dscp'] = value
         return self
 
     def maxbw_rate(self, rate):
@@ -115,7 +107,7 @@ class QOSQueue(NVPEntity):
         """
         if rate < 0:
             raise AttributeError("Rate must be positive")
-        self.info['max_bandwidth_rate'] = rate
+        self['max_bandwidth_rate'] = rate
         return self
 
     def minbw_rate(self, rate):
@@ -126,7 +118,7 @@ class QOSQueue(NVPEntity):
         """
         if rate < 0:
             raise AttributeError("Rate must be positive")
-        self.info['min_bandwidth_rate'] = rate
+        self['min_bandwidth_rate'] = rate
         return self
 
     def qos_marking(self, marking):
@@ -137,7 +129,7 @@ class QOSQueue(NVPEntity):
         """
         if marking != 'trusted' or marking != 'untrusted':
             raise AttributeError("Marking can be 'trusted' or 'untrusted'")
-        self.info['qos_marking']
+        self['qos_marking']
         return self
 
     def create(self):
@@ -177,45 +169,63 @@ class QOSQueue(NVPEntity):
         return super(QOSQueue, self)._action('DELETE', uri)
 
 
-class SecurityRule(object):
+class SecurityRule(dict):
     """Utility class for SecurityProfile's rules"""
-    #TODO: Needs to be tested for convert to JSON
+    ethertype_map = {'ipv4': 4, 'ipv6': 6,
+                     '4': 4, '6': 6}
 
     def __init__(self, ethertype, ip_prefix=None, port_range_max=None,
                  port_range_min=None, profile_uuid=None, protocol=None):
-        if ethertype != 4 and ethertype != 6:
-            raise AttributeError("Ethertype must be 4 or 6")
-        self.info = {}
-        self.info['ethertype'] = ethertype
+        if isinstance(ethertype, basestring):
+            ethertype = SecurityRule.ethertype_map.get(ethertype.lower())
+
+        if ethertype != 4 or ethertype != 6:
+            raise AttributeError('Ethertype must be one of '
+                                 '4, 6, IPv4, or IPv6)')
+
+        self['ethertype'] = ethertype
+
+        # TODO(jkoelker) DRY this up
+        if ip_prefix is not None:
+            self.ip_prefix(ip_prefix)
+
+        if port_range_max is not None:
+            self.port_range_max(port_range_max)
+
+        if port_range_min is not None:
+            self.port_range_min(port_range_min)
+
+        if profile_uuid is not None:
+            self.profile_uuid(profile_uuid)
+
+        if protocol is not None:
+            self.protocol(protocol)
 
     def ip_prefix(self, prefix):
-        self.info['ip_prefix'] = prefix
+        self['ip_prefix'] = prefix
         return self
 
     def port_range_max(self, port_range):
         if port_range < 0 or port_range > 65535:
             raise AttributeError("Max port range is out of range")
-        self.info['port_range_max'] = port_range
+        self['port_range_max'] = port_range
         return self
 
     def port_range_min(self, port_range):
         if port_range < 0 or port_range > 65535:
             raise AttributeError("Min port range is out of range")
-        self.info['port_range_min'] = port_range
+        self['port_range_min'] = port_range
         return self
 
     def profile_uuid(self, uuid):
-        self.info['profile_uuid'] = uuid
+        self['profile_uuid'] = uuid
         return self
 
     def protocol(self, protid):
         if protid < 0 or protid > 255:
             raise AttributeError("IP protocol number out of range")
-        self.info['protocol'] = protid
+        self['protocol'] = protid
         return self
-
-    def to_dict(self):
-        return self.info
 
 
 class SecurityProfile(NVPEntity):
@@ -225,9 +235,15 @@ class SecurityProfile(NVPEntity):
         super(SecurityProfile, self).__init__(connection)
         self.uuid = uuid
 
-    def _unroll(self):
-        super(SecurityProfile, self)._unroll()
-        return self.info
+    def _validate_rulelist(self, rulelist):
+        if not isinstance(rulelist, list):
+            rulelist = [rulelist]
+
+        if not all([isinstance(rule, (SecurityRule, dict))
+                    for rule in rulelist]):
+            raise AttributeError("SecurityRule or dict objects required")
+
+        return rulelist
 
     def port_egress_rules(self, rulelist):
         """Sets rules for outbound traffic. All outbound traffic not matching
@@ -238,12 +254,8 @@ class SecurityProfile(NVPEntity):
         If a single SecurityRule object is given it will be put in a list
         for you
         """
-        if not type(rulelist) is list:
-            rulelist = [rulelist]
-        if False in [isinstance(rule, SecurityRule) for rule in rulelist]:
-            raise AttributeError("SecurityRule objects required")
-        outlist = [rule.to_dict() for rule in rulelist]
-        self.info['logical_port_egress_rules'] = outlist
+        rulelist = self._validate_rulelist(rulelist)
+        self['logical_port_egress_rules'] = rulelist
         return self
 
     def port_ingress_rules(self, rulelist):
@@ -255,12 +267,8 @@ class SecurityProfile(NVPEntity):
         If a single SecurityRule object is given it will be put in a list
         for you
         """
-        if not type(rulelist) is list:
-            rulelist = [rulelist]
-        if False in [isinstance(rule, SecurityRule) for rule in rulelist]:
-            raise AttributeError("SecurityRule objects required")
-        outlist = [rule.to_dict() for rule in rulelist]
-        self.info['logical_port_ingress_rules'] = outlist
+        rulelist = self._validate_rulelist(rulelist)
+        self['logical_port_ingress_rules'] = rulelist
         return self
 
     def create(self):
@@ -293,7 +301,7 @@ class SecurityProfile(NVPEntity):
         return super(SecurityProfile, self)._action('DELETE', uri)
 
 
-class TransportConnector(object):
+class TransportConnector(dict):
     GRE = 'GREConnector'
     STT = 'STTConnector'
     BRIDGE = 'BridgeConnector'
@@ -304,12 +312,8 @@ class TransportConnector(object):
     def __init__(self, tzone_uuid, connector_type):
         if not connector_type in TransportConnector._valid_entries:
             raise AttributeError("connector_type is invalid")
-        self.info = {}
-        self.info['tzone_uuid'] = tzone_uuid
-        self.info['connector_type'] = connector_type
-
-    def to_dict(self):
-        return self.info
+        self['tzone_uuid'] = tzone_uuid
+        self['connector_type'] = connector_type
 
 
 class TransportNode(NVPEntity):
@@ -319,13 +323,9 @@ class TransportNode(NVPEntity):
         super(TransportNode, self).__init__(connection)
         self.uuid = uuid
 
-    def _unroll(self):
-        super(TransportNode, self)._unroll()
-        return self.info
-
     def admin_status_enabled(self, flag):
         """Will set the admin enabled status of the node"""
-        self.info['admin_status_enabled'] = flag
+        self['admin_status_enabled'] = flag
         return self
 
     def credential(self, mgmt_credentials):
@@ -335,25 +335,25 @@ class TransportNode(NVPEntity):
         mgmt_credentials -- either MgmtAddrCredential, or
                             SecurityCertificateCredential string
         """
-        self.info['credential'] = mgmt_credentials
+        self['credential'] = mgmt_credentials
         return self
 
     def integration_bridge(self, bridgeid):
         """Used to connect logical and transport networks"""
         if len(bridgeid) > 40:
             raise AttributeError("Bridge id must be <= 40 characters")
-        self.info['intergration_bridge_id'] = bridgeid
+        self['intergration_bridge_id'] = bridgeid
         return self
 
     def rendezvous_client(self, flag):
         """Indicates if node management connections may be established
         via a rendezvous server"""
-        self.info['mgmt_rendezvous_client'] = flag
+        self['mgmt_rendezvous_client'] = flag
         return self
 
     def rendezvous_server(self, flag):
         """indicates if node should act as rendezvous server"""
-        self.info['mgmt_rendezvous_server'] = flag
+        self['mgmt_rendezvous_server'] = flag
         return self
 
     def transport_connectors(self, connector_list):
@@ -366,17 +366,19 @@ class TransportNode(NVPEntity):
         """
         if not type(connector_list) is list:
             connector_list = [connector_list]
-        if False in [isinstance(conn, TransportConnector) for conn in
-                     connector_list]:
-            raise AttributeError("TransportConnector objects required")
-        outlist = [conn.to_dict() for rule in connector_list]
-        self.info['transport_connectors'] = outlist
+
+        if not all([isinstance(conn, (TransportConnector, dict))
+                    for conn in connector_list]):
+            raise AttributeError('TransportConnector or dict objects '
+                                 'required')
+
+        self['transport_connectors'] = connector_list
         return self
 
     def zone_forwarding(self, flag):
         """Indicates if node may be used to forward packets between
         transport zones."""
-        self.info['zone_fowarding'] = flag
+        self['zone_fowarding'] = flag
         return self
 
     def create(self):
@@ -422,10 +424,6 @@ class GatewayService(NVPEntity):
         super(GatewayService, self).__init__(connection)
         self.uuid = uuid
 
-    def _unroll(self):
-        super(GatewayService, self)._unroll()
-        return self.info
-
     def create(self):
         """Create (verb) will create the Gateway Service"""
         uri = common.genuri('gateway-service')
@@ -461,10 +459,6 @@ class TransportZone(NVPEntity):
     def __init__(self, connection, uuid=None):
         super(TransportZone, self).__init__(connection)
         self.uuid = uuid
-
-    def _unroll(self):
-        super(TransportZone, self)._unroll()
-        return self.info
 
     def create(self):
         """Create (verb) will create the transport zone"""
@@ -505,7 +499,7 @@ class LSwitch(NVPEntity):
     def port_isolation_enabled(self, enabled):
         """Will set/update the port_isolation_enabled flag on the switch
         """
-        self.info['port_isolation_enabled'] = enabled
+        self['port_isolation_enabled'] = enabled
         return self
 
     def transport_zones(self, zones):
@@ -513,10 +507,6 @@ class LSwitch(NVPEntity):
         """
         #TODO: Soon
         return self
-
-    def _unroll(self):
-        super(LSwitch, self)._unroll()
-        return self.info
 
     def query(self):
         """Returns the query object for logical switches
@@ -571,7 +561,7 @@ class LSwitchPort(NVPEntity):
         self.uuid = uuid
 
     def admin_status_enabled(self, enabled):
-        self.info['admin_status_enabled'] = enabled
+        self['admin_status_enabled'] = enabled
         return self
 
     def attachment_patch(self, peer_uuid, lrouter_uuid=None):
@@ -608,7 +598,7 @@ class LSwitchPort(NVPEntity):
         """
         if not type(address_pair_list) is list:
             address_pair_list = [address_pair_list]
-        self.info['allowed_address_pairs'] = address_pair_list
+        self['allowed_address_pairs'] = address_pair_list
         return self
 
     def mirror_targets(self, mirrorlist):
@@ -621,7 +611,7 @@ class LSwitchPort(NVPEntity):
             mirrorlist = [mirrorlist]
         elif len(mirrorlist) > 3:
             raise AttributeError("Mirror list has greater than 3 items")
-        self.info['mirror_targets'] = mirrorlist
+        self['mirror_targets'] = mirrorlist
         return self
 
     def portno(self, portnum):
@@ -632,7 +622,7 @@ class LSwitchPort(NVPEntity):
         """
         if portnum < 1 or portnum > 1000000:
             raise AttributeError("Port number value out of range (1,1000000)")
-        self.info['portno'] = portnum
+        self['portno'] = portnum
         return self
 
     def qosuuid(self, uuid):
@@ -646,7 +636,7 @@ class LSwitchPort(NVPEntity):
             uuid = 'null'
         elif not common.isuuid(uuid):
             raise AttributeError("UUID is invalid")
-        self.info['queue_uuid'] = uuid
+        self['queue_uuid'] = uuid
         return self
 
     def security_profiles(self, uuidlist):
@@ -663,10 +653,6 @@ class LSwitchPort(NVPEntity):
             raise AttributeError("One or more UUIDs are invalid")
         self['security_profiles'] = uuidlist
         return self
-
-    def _unroll(self):
-        super(LSwitchPort, self)._unroll()
-        return self.info
 
     def create(self):
         """Create (verb) will create the logical port on the switch"""
