@@ -54,15 +54,18 @@ class CoreLib(object):
         """
         if poolmanager is None:
             self.conn = urllib3.connection_from_url(uri)
+
         else:
             self.conn = poolmanager.connection_from_url(uri)
+
         self.connection = Connection(connection=self.conn,
                                      username=username,
                                      password=password)
 
     def _action(self, entity, method, resource):
-        if not entity:
+        if entity is None:
             return
+
         logger.info("(%s @ %s): %s" % (method, resource,
                                        entity._unroll()))
         try:
@@ -70,8 +73,10 @@ class CoreLib(object):
                                         body=entity._unroll())
         except socket.error, v:
             errorcode = v[0]
+
             if errorcode == errno.ECONNREFUSED:
                 logger.error("Connection refused")
+
             raise urllib3.exceptions.HTTPError("Connection refused")
         return r
 
@@ -153,38 +158,37 @@ class Connection(object):
     def request(self, method, apicall, generationnumber=0, body=None):
         retrypause = 0
         internalramp = 10
-        r = None
         url = apicall
+
         # TODO(jkoelker) refactor this to use the retry kwarg to urlopen
         for retryCount in xrange(self.maxRetries):
             self.generationnumber = generationnumber
-            jsonBody = json.dumps(body)
+            json_body = json.dumps(body)
+
             if method in self._encode_url_methods:
                 logger.info("Encoded URL: %s" % urlencode(body))
                 url += '?' + urlencode(body, doseq=True)
-                r = self.connection.urlopen(method, url, headers=self.headers)
-                #r = self.connection.request_encode_url(method, apicall,
-                #                                       fields=body,
-                #                                       headers=self.headers)
+                r = self.connection.urlopen(method, url,
+                                            headers=self.headers)
+
             else:
                 r = self.connection.urlopen(method, apicall,
-                                            jsonBody,
+                                            json_body,
                                             headers=self.headers)
 
             if self._iserror(r):
                 try:
                     self._handle_error(r)
                     continue
+
                 except EnvironmentError:
                     if 'retry-after' in r.headers:
                         logger.info("Waiting for server: ",
                                     r.headers['retry-after'])
                         retrypause = r.headers['retry-after']
                         time.sleep(retrypause)
+
                     else:
-                        import sys
-                        print >> sys.stderr, "!"
-                        print >> sys.stderr, "%s" % r.headers
                         logger.info("Headers missing retry delay")
                         self.connection.close()
 
@@ -193,8 +197,10 @@ class Connection(object):
                 except:
                     logger.error("Unhandled error:")
                     raise
+
             self._handle_headers(r)
             return r
+
         raise AICException(408, 'Request Timeout -- Maxed retry attempts')
 
     def _handle_headers(self, resp):
@@ -210,6 +216,7 @@ class Connection(object):
     def _handle_error(self, resp):
         logger.info("Received error %s (%s)" % (resp.status, resp.reason))
         comment = "%s: %s" % (resp.reason, resp.data)
+
         if resp.status == 400:
             logger.error("Bad request")
             raise AICException(400, comment)
@@ -218,6 +225,7 @@ class Connection(object):
             logger.info("Authorization expired; renewing")
             self.authenticated = False
             authstatus = self._login(self.username, self.password)
+
             if not authstatus:
                 logger.error("Re-authorization failed.")
                 raise AICException(401, 'Unauthorized')

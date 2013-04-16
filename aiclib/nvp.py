@@ -116,7 +116,6 @@ class Connection(core.CoreLib):
     def _action(self, entity, method, resource):
         """Will inject generation ID into the JSON result object if it exists
         """
-        r = None
         try:
             r = super(Connection, self)._action(entity, method, resource)
         except core.AICException as e:
@@ -134,19 +133,25 @@ class Connection(core.CoreLib):
                 raise ServiceUnavailable()
             else:
                 raise NVPException()
+
         logger.info("Response headers: %s" % r.headers)
         responselength = 0
         generationid = None
+
         if 'x-nvp-config-generation' in r.headers:
             generationid = r.getheader('x-nvp-config-generation')
+
         if 'content-length' in r.headers:
             responselength = int(r.getheader('content-length'))
+
         if responselength > 0:
             if r.getheader('content-type') == 'application/json':
                 jsonreturn = json.loads(r.data)
+
                 if generationid:
                     jsonreturn['_generationid'] = generationid
                 return jsonreturn
+
             else:
                 return r.data
         return
