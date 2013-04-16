@@ -76,11 +76,10 @@ class CoreLib(object):
         return r
 
 
-class Entity(object):
+class Entity(dict):
 
     def __init__(self, connection):
         self.connection = connection
-        self.info = {}
 
     def _action(self, method, resource):
         """This is the ancestor method that all 'verbs' must call to perform
@@ -89,7 +88,7 @@ class Entity(object):
         return self.connection._action(self, method, resource)
 
     def _unroll(self):
-        return self.info
+        return self
 
 
 class Query(object):
