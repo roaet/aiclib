@@ -16,4 +16,11 @@
 
 
 def tag(scope, value):
+    """Create a Tag dict."""
     return {'scope': scope, 'tag': value}
+
+
+def copy_securityrule(securityrule):
+    """Return a new SecurityRule dict with profile_uuid removed."""
+    return dict((k, v) for k, v in securityrule.iteritems()
+                if k != 'profile_uuid')
