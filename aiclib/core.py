@@ -63,7 +63,7 @@ class CoreLib(object):
                                      password=password)
 
     def _action(self, entity, method, resource):
-        if not entity:
+        if entity is None:
             return
 
         logger.info("(%s @ %s): %s" % (method, resource,
