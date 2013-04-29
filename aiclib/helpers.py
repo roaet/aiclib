@@ -20,6 +20,13 @@ def tag(scope, value):
     return {'scope': scope, 'tag': value}
 
 
+def tags(obj):
+    """Return a non-retarded version of an object's tags."""
+    if 'tags' in obj:
+        return dict((t['scope'], t['value']) for t in obj['tags'])
+    return {}
+
+
 def copy_securityrule(securityrule):
     """Return a new SecurityRule dict with profile_uuid removed."""
     return dict((k, v) for k, v in securityrule.iteritems()
