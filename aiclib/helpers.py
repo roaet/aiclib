@@ -23,7 +23,7 @@ def tag(scope, value):
 def tags(obj):
     """Tards or untards an object's tags."""
     if 'tags' in obj:
-        return dict((t['scope'], t['value']) for t in obj['tags'])
+        return dict((t['scope'], t['tag']) for t in obj['tags'])
     return [tag(k, v) for k, v in obj.iteritems()]
 
 
