@@ -21,10 +21,10 @@ def tag(scope, value):
 
 
 def tags(obj):
-    """Return a non-retarded version of an object's tags."""
+    """Tards or untards an object's tags."""
     if 'tags' in obj:
         return dict((t['scope'], t['value']) for t in obj['tags'])
-    return {}
+    return [tag(k, v) for k, v in obj.iteritems()]
 
 
 def copy_securityrule(securityrule):
