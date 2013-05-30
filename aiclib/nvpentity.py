@@ -179,7 +179,7 @@ class SecurityRule(dict):
         if isinstance(ethertype, basestring):
             ethertype = SecurityRule.ethertype_map.get(ethertype.lower())
 
-        if ethertype != 4 or ethertype != 6:
+        if ethertype != 4 and ethertype != 6:
             raise AttributeError('Ethertype must be one of '
                                  '4, 6, IPv4, or IPv6)')
 
