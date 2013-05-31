@@ -1,3 +1,19 @@
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
+
+# Copyright 2013 Rackspace
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 """
 Created on August 23, 2012
 
@@ -6,7 +22,6 @@ Created on August 23, 2012
 
 import json
 import logging
-import urllib3
 
 import common
 import core
@@ -22,13 +37,13 @@ def grab_uuid_of_type(text_or_dict, nvptype):
     errormsg = "Missing key (%s) from dictionary when expected."
     typeerror = "Incorrect type (%s); expected %s"
     if not 'uuid' in text_or_dict:
-        log.logging.error(errormsg % "uuid")
+        logger.error(errormsg % "uuid")
         raise TypeError(errormsg % "uuid")
     if nvptype and not 'type' in text_or_dict:
-        log.logging.error(errormsg % "type")
+        logger.error(errormsg % "type")
         raise TypeError(errormsg % "type")
         if text_or_dict['type'] != nvptype:
-            log.logging.error(typeerror % (text_or_dict['type'], nvptype))
+            logger.error(typeerror % (text_or_dict['type'], nvptype))
             raise TypeError(typeerror % (text_or_dict['type'], nvptype))
     return text_or_dict['uuid']
 
@@ -101,7 +116,6 @@ class Connection(core.CoreLib):
     def _action(self, entity, method, resource):
         """Will inject generation ID into the JSON result object if it exists
         """
-        r = None
         try:
             r = super(Connection, self)._action(entity, method, resource)
         except core.AICException as e:
@@ -119,19 +133,25 @@ class Connection(core.CoreLib):
                 raise ServiceUnavailable()
             else:
                 raise NVPException()
+
         logger.info("Response headers: %s" % r.headers)
         responselength = 0
         generationid = None
+
         if 'x-nvp-config-generation' in r.headers:
             generationid = r.getheader('x-nvp-config-generation')
+
         if 'content-length' in r.headers:
             responselength = int(r.getheader('content-length'))
+
         if responselength > 0:
             if r.getheader('content-type') == 'application/json':
                 jsonreturn = json.loads(r.data)
+
                 if generationid:
                     jsonreturn['_generationid'] = generationid
                 return jsonreturn
+
             else:
                 return r.data
         return

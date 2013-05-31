@@ -1,3 +1,19 @@
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
+
+# Copyright 2013 Rackspace
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 """
 Created on August 17, 2012
 
@@ -15,7 +31,6 @@ except ImportError:
     from urllib import urlencode
 
 import urllib3
-from urllib3.exceptions import MaxRetryError
 
 import common
 
@@ -39,15 +54,18 @@ class CoreLib(object):
         """
         if poolmanager is None:
             self.conn = urllib3.connection_from_url(uri)
+
         else:
             self.conn = poolmanager.connection_from_url(uri)
+
         self.connection = Connection(connection=self.conn,
-                                      username=username,
-                                      password=password)
+                                     username=username,
+                                     password=password)
 
     def _action(self, entity, method, resource):
-        if not entity:
+        if entity is None:
             return
+
         logger.info("(%s @ %s): %s" % (method, resource,
                                        entity._unroll()))
         try:
@@ -55,17 +73,18 @@ class CoreLib(object):
                                         body=entity._unroll())
         except socket.error, v:
             errorcode = v[0]
+
             if errorcode == errno.ECONNREFUSED:
                 logger.error("Connection refused")
+
             raise urllib3.exceptions.HTTPError("Connection refused")
         return r
 
 
-class Entity(object):
+class Entity(dict):
 
     def __init__(self, connection):
         self.connection = connection
-        self.info = {}
 
     def _action(self, method, resource):
         """This is the ancestor method that all 'verbs' must call to perform
@@ -74,7 +93,7 @@ class Entity(object):
         return self.connection._action(self, method, resource)
 
     def _unroll(self):
-        return self.info
+        return self
 
 
 class Query(object):
@@ -139,37 +158,37 @@ class Connection(object):
     def request(self, method, apicall, generationnumber=0, body=None):
         retrypause = 0
         internalramp = 10
-        r = None
         url = apicall
+
+        # TODO(jkoelker) refactor this to use the retry kwarg to urlopen
         for retryCount in xrange(self.maxRetries):
             self.generationnumber = generationnumber
-            jsonBody = json.dumps(body)
+            json_body = json.dumps(body)
+
             if method in self._encode_url_methods:
                 logger.info("Encoded URL: %s" % urlencode(body))
                 url += '?' + urlencode(body, doseq=True)
-                r = self.connection.urlopen(method, url, headers=self.headers)
-                #r = self.connection.request_encode_url(method, apicall,
-                #                                       fields=body,
-                #                                       headers=self.headers)
+                r = self.connection.urlopen(method, url,
+                                            headers=self.headers)
+
             else:
                 r = self.connection.urlopen(method, apicall,
-                                            jsonBody,
+                                            json_body,
                                             headers=self.headers)
 
             if self._iserror(r):
                 try:
                     self._handle_error(r)
                     continue
+
                 except EnvironmentError:
                     if 'retry-after' in r.headers:
                         logger.info("Waiting for server: ",
                                     r.headers['retry-after'])
                         retrypause = r.headers['retry-after']
                         time.sleep(retrypause)
+
                     else:
-                        import sys
-                        print >> sys.stderr, "!"
-                        print >> sys.stderr, "%s" % r.headers
                         logger.info("Headers missing retry delay")
                         self.connection.close()
 
@@ -178,8 +197,10 @@ class Connection(object):
                 except:
                     logger.error("Unhandled error:")
                     raise
+
             self._handle_headers(r)
             return r
+
         raise AICException(408, 'Request Timeout -- Maxed retry attempts')
 
     def _handle_headers(self, resp):
@@ -195,6 +216,7 @@ class Connection(object):
     def _handle_error(self, resp):
         logger.info("Received error %s (%s)" % (resp.status, resp.reason))
         comment = "%s: %s" % (resp.reason, resp.data)
+
         if resp.status == 400:
             logger.error("Bad request")
             raise AICException(400, comment)
@@ -203,6 +225,7 @@ class Connection(object):
             logger.info("Authorization expired; renewing")
             self.authenticated = False
             authstatus = self._login(self.username, self.password)
+
             if not authstatus:
                 logger.error("Re-authorization failed.")
                 raise AICException(401, 'Unauthorized')
