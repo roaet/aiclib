@@ -171,15 +171,15 @@ class QOSQueue(NVPEntity):
 
 class SecurityRule(dict):
     """Utility class for SecurityProfile's rules"""
-    ethertype_map = {'ipv4': 4, 'ipv6': 6,
-                     '4': 4, '6': 6}
+    ethertype_map = {'ipv4': "IPv4", 'ipv6':"IPv6",
+                     '4': "IPv4", '6': "IPv6"}
 
     def __init__(self, ethertype, ip_prefix=None, port_range_max=None,
                  port_range_min=None, profile_uuid=None, protocol=None):
         if isinstance(ethertype, basestring):
             ethertype = SecurityRule.ethertype_map.get(ethertype.lower())
 
-        if ethertype != 4 and ethertype != 6:
+        if ethertype != "IPv4" and ethertype != "IPv6":
             raise AttributeError('Ethertype must be one of '
                                  '4, 6, IPv4, or IPv6)')
 

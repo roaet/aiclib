@@ -120,7 +120,7 @@ class Connection(core.CoreLib):
             r = super(Connection, self)._action(entity, method, resource)
         except core.AICException as e:
             if e.code == 400 or e.code == 500:
-                raise NVPException()
+                raise NVPException(e.message)
             elif e.code == 403:
                 raise Forbidden()
             elif e.code == 404:
@@ -132,7 +132,7 @@ class Connection(core.CoreLib):
             elif e.code == 503:
                 raise ServiceUnavailable()
             else:
-                raise NVPException()
+                raise NVPException(e.message)
 
         logger.info("Response headers: %s" % r.headers)
         responselength = 0
@@ -189,12 +189,10 @@ class NVPException(Exception):
     """
     message = "An unknown exception occurred."
 
-    def __init__(self, **kwargs):
-        try:
-            self._error_string = self.message % kwargs
-
-        except Exception:
-            self._error_string = self.message
+    def __init__(self, *args):
+        self._error_string = self.message
+        for i in args:
+            self._error_string += "\n" + i
 
     def __str__(self):
         return self._error_string
