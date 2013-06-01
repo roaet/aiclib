@@ -171,7 +171,7 @@ class QOSQueue(NVPEntity):
 
 class SecurityRule(dict):
     """Utility class for SecurityProfile's rules"""
-    ethertype_map = {'ipv4': "IPv4", 'ipv6':"IPv6",
+    ethertype_map = {'ipv4': "IPv4", 'ipv6': "IPv6",
                      '4': "IPv4", '6': "IPv6"}
 
     def __init__(self, ethertype, ip_prefix=None, port_range_max=None,
