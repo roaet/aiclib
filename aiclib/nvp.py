@@ -97,7 +97,7 @@ class Connection(core.CoreLib):
         entity = nvpentity.GatewayService(self, uuid=uuidvalue)
         return entity
 
-    def zone(self, uuid=None):
+    def transportzone(self, uuid=None):
         uuidvalue = grab_uuid_of_type(uuid, None)
         entity = nvpentity.TransportZone(self, uuid=uuidvalue)
         return entity
@@ -119,8 +119,11 @@ class Connection(core.CoreLib):
         try:
             r = super(Connection, self)._action(entity, method, resource)
         except core.AICException as e:
-            if e.code == 400 or e.code == 500:
-                raise NVPException(e.message)
+            logger.exception(e)
+            if e.code == 400:
+                raise BadRequest()
+            elif e.code == 500:
+                raise ServerError()
             elif e.code == 403:
                 raise Forbidden()
             elif e.code == 404:
@@ -200,6 +203,14 @@ class NVPException(Exception):
 
 class UnauthorizedRequest(NVPException):
     message = "Server denied session's authentication credentials."
+
+
+class BadRequest(NVPException):
+    message = "Server returned bad request"
+
+
+class ServerError(NVPException):
+    message = "Server returned bad request"
 
 
 class ResourceNotFound(NVPException):
