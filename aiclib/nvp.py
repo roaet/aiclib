@@ -68,8 +68,8 @@ class Connection(core.CoreLib):
         entity = nvpentity.QOSQueue(self, uuid=uuidvalue)
         return entity
 
-    def securityrule(self, ethertype):
-        entity = nvpentity.SecurityRule(ethertype)
+    def securityrule(self, ethertype, **fields):
+        entity = nvpentity.SecurityRule(ethertype, **fields)
         return entity
 
     def securityprofile(self, uuid=None):
@@ -193,9 +193,7 @@ class NVPException(Exception):
     message = "An unknown exception occurred."
 
     def __init__(self, *args):
-        self._error_string = self.message
-        for i in args:
-            self._error_string += "\n" + i
+        self._error_string = "%s %s" % (self.message, '\n'.join(args))
 
     def __str__(self):
         return self._error_string
