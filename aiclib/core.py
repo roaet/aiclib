@@ -24,7 +24,6 @@ import json
 import logging
 import errno
 import socket
-import time
 try:
     from urllib.parse import urlencode
 except ImportError:
@@ -33,6 +32,7 @@ except ImportError:
 import urllib3
 
 import common
+import nvp
 
 
 logger = logging.getLogger(__name__)
@@ -119,7 +119,8 @@ class Connection(object):
         self.authenticated = False
         self.username = username
         self.password = password
-        self.maxRetries = 5
+        self.maxRetries = 3
+        self.timeout = 10
         self._headers = {}
         self.generationnumber = 0
         self.authkey = ''
@@ -135,7 +136,7 @@ class Connection(object):
     def _login(self, username, password):
         fields = {'username': username, 'password': password}
         r = self._conn.request_encode_body('POST', common.genuri('login'),
-                                           fields=fields,
+                                           fields=fields, timeout=self.timeout,
                                            encode_multipart=False)
         if self._iserror(r):
             logger.error("Need to handle error")
@@ -156,52 +157,38 @@ class Connection(object):
         return self._headers
 
     def request(self, method, apicall, generationnumber=0, body=None):
-        retrypause = 0
-        internalramp = 10
         url = apicall
 
         # TODO(jkoelker) refactor this to use the retry kwarg to urlopen
-        for retryCount in xrange(self.maxRetries):
-            self.generationnumber = generationnumber
-            json_body = json.dumps(body)
-
-            if method in self._encode_url_methods:
-                logger.info("Encoded URL: %s" % urlencode(body))
-                url += '?' + urlencode(body, doseq=True)
-                r = self.connection.urlopen(method, url,
-                                            headers=self.headers)
-
-            else:
-                r = self.connection.urlopen(method, apicall,
-                                            json_body,
-                                            headers=self.headers)
-
-            if self._iserror(r):
-                try:
-                    self._handle_error(r)
-                    continue
-
-                except EnvironmentError:
-                    if 'retry-after' in r.headers:
-                        logger.info("Waiting for server: ",
-                                    r.headers['retry-after'])
-                        retrypause = r.headers['retry-after']
-                        time.sleep(retrypause)
-
-                    else:
-                        logger.info("Headers missing retry delay")
-                        self.connection.close()
-
-                        time.sleep(internalramp)
-                        internalramp += .5
-                except:
-                    logger.error("Unhandled error:")
-                    raise
-
-            self._handle_headers(r)
-            return r
-
-        raise AICException(408, 'Request Timeout -- Maxed retry attempts')
+        self.generationnumber = generationnumber
+        json_body = json.dumps(body)
+        for i in xrange(self.maxRetries):
+            try:
+                if method in self._encode_url_methods:
+                    logger.info("Encoded URL: %s" % urlencode(body))
+                    url += '?' + urlencode(body, doseq=True)
+                    r = self.connection.urlopen(method, url, retries=1,
+                                                timeout=self.timeout,
+                                                headers=self.headers)
+                else:
+                    r = self.connection.urlopen(method, apicall,
+                                                json_body,
+                                                timeout=self.timeout,
+                                                retries=1,
+                                                headers=self.headers)
+                if self._iserror(r):
+                    try:
+                        self._handle_error(r)
+                    except:
+                        logger.error("Unhandled error:")
+                        raise
+                return r
+            except urllib3.exceptions.TimeoutError:
+                continue
+            except nvp.RequestTimeout:
+                continue
+        if i == self.maxRetries - 1: 
+            raise AICException(408, 'Max retries reached')
 
     def _handle_headers(self, resp):
         return

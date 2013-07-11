@@ -113,28 +113,31 @@ class Connection(core.CoreLib):
                                        lport_uuid_value)
         return entity
 
+    def handle_status_code(self, code, iserror=False, message=None):
+        if code == 400 or code == 500:
+            raise NVPException(message)
+        elif code == 403:
+            raise Forbidden(message)
+        elif code == 404:
+            raise ResourceNotFound(message)
+        elif code == 408:
+            raise RequestTimeout(message)
+        elif code == 409:
+            raise Conflict(message)
+        elif code == 503:
+            raise ServiceUnavailable(message)
+        elif iserror:
+            raise NVPException("Unhandled error occurred")
+
     def _action(self, entity, method, resource):
         """Will inject generation ID into the JSON result object if it exists
         """
         try:
             r = super(Connection, self)._action(entity, method, resource)
         except core.AICException as e:
-            if e.code == 400 or e.code == 500:
-                raise NVPException(e.message)
-            elif e.code == 403:
-                raise Forbidden()
-            elif e.code == 404:
-                raise ResourceNotFound()
-            elif e.code == 408:
-                raise RequestTimeout()
-            elif e.code == 409:
-                raise Conflict()
-            elif e.code == 503:
-                raise ServiceUnavailable()
-            else:
-                raise NVPException(e.message)
+            self.handle_status_code(e.code, iserror=True, message=e.message)
 
-        logger.info("Response headers: %s" % r.headers)
+        self.handle_status_code(r.status)
         responselength = 0
         generationid = None
 
