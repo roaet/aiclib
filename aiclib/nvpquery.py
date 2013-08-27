@@ -20,8 +20,6 @@ Created on August 22, 2012
 @author: Justin Hammond, Rackspace Hosting
 """
 
-import logging
-
 import common
 import core
 import log
