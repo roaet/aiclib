@@ -502,10 +502,18 @@ class LSwitch(NVPEntity):
         self['port_isolation_enabled'] = enabled
         return self
 
-    def transport_zones(self, zones):
-        """Will set/update the transport zones that the switch is connected
+    def transport_zone(self, zone_uuid, transport_type, vlan_id=None):
+        """Sets/updates the transport zones that the switch is connected
+        to. Expects zones to be a list of dicts with keys "zone_uuid" and
+        "transport_type" set in each.
         """
-        #TODO: Soon
+        self["transport_zones"] = self.get("transport_zones") or []
+        tz = dict(zone_uuid=zone_uuid, transport_type=transport_type)
+        if vlan_id:
+            vlan = dict(transport=vlan_id)
+            tz["binding_config"] = {}
+            tz["binding_config"]["vlan_translation"] = [vlan]
+        self["transport_zones"].append(tz)
         return self
 
     def query(self):
