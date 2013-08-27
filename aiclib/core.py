@@ -187,7 +187,7 @@ class Connection(object):
                 continue
             except nvp.RequestTimeout:
                 continue
-        if i == self.maxRetries - 1: 
+        if i == self.maxRetries - 1:
             raise AICException(408, 'Max retries reached')
 
     def _handle_headers(self, resp):
