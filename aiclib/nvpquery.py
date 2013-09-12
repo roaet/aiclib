@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 class NVPBaseQuery(core.Query):
 
     def __init__(self, aic_connection, resource):
+        super(NVPBaseQuery, self).__init__(aic_connection, resource)
         logger.debug("Created NVPBaseQuery")
         self.query['fields'] = '*'
 
