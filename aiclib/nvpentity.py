@@ -580,7 +580,12 @@ class LSwitchPort(NVPEntity):
         pass
 
     def attachment_vif(self, vif_uuid, hypervisor=None):
-        pass
+        logger.info("Attaching VIF %s" % vif_uuid)
+        self["vif_uuid"] = vif_uuid
+        self["type"] = "VifAttachment"
+        uri = common.genuri("lswitch", self.lswitch_uuid, "lport", self.uuid,
+                            "attachment")
+        return super(LSwitchPort, self)._action('PUT', uri)
 
     def attachment_extended_network_bridge(self, tnode_uuid, bridgeid,
                                            vlan=None):
