@@ -115,19 +115,19 @@ class Connection(core.CoreLib):
 
     def handle_status_code(self, code, iserror=False, message=None):
         if code == 400 or code == 500:
-            raise NVPException(message)
+            raise NVPException(message, code)
         elif code == 403:
-            raise Forbidden(message)
+            raise Forbidden(message, code)
         elif code == 404:
-            raise ResourceNotFound(message)
+            raise ResourceNotFound(message, code)
         elif code == 408:
-            raise RequestTimeout(message)
+            raise RequestTimeout(message, code)
         elif code == 409:
-            raise Conflict(message)
+            raise Conflict(message, code)
         elif code == 503:
-            raise ServiceUnavailable(message)
+            raise ServiceUnavailable(message, code)
         elif iserror:
-            raise NVPException("Unhandled error occurred")
+            raise NVPException("Unhandled error occurred", code)
 
     def _action(self, entity, method, resource):
         """Will inject generation ID into the JSON result object if it exists
@@ -153,6 +153,8 @@ class Connection(core.CoreLib):
 
                 if generationid:
                     jsonreturn['_generationid'] = generationid
+                if r.status:
+                    jsonreturn['_nvpstatus'] = r.status
                 return jsonreturn
 
             else:
