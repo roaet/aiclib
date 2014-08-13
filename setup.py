@@ -19,7 +19,7 @@ import setuptools
 
 setuptools.setup(
     name='aiclib',
-    version="0.81",
+    version="0.83",
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: Apache Software License',
@@ -36,6 +36,6 @@ setuptools.setup(
     license='Apache Software License',
     description='A declarative system to consume the NVP api.',
     long_description=open('README.rst').read(),
-    url='https://github.com/jkoelker/aiclib',
+    url='https://github.com/rackerlabs/aiclib',
     zip_safe=False,
 )

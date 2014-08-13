@@ -22,6 +22,7 @@ Created on August 23, 2012
 
 import json
 import logging
+import time
 
 import common
 import core
@@ -36,10 +37,10 @@ def grab_uuid_of_type(text_or_dict, nvptype):
         return text_or_dict
     errormsg = "Missing key (%s) from dictionary when expected."
     typeerror = "Incorrect type (%s); expected %s"
-    if not 'uuid' in text_or_dict:
+    if 'uuid' not in text_or_dict:
         logger.error(errormsg % "uuid")
         raise TypeError(errormsg % "uuid")
-    if nvptype and not 'type' in text_or_dict:
+    if nvptype and 'type' not in text_or_dict:
         logger.error(errormsg % "type")
         raise TypeError(errormsg % "type")
         if text_or_dict['type'] != nvptype:
@@ -49,11 +50,6 @@ def grab_uuid_of_type(text_or_dict, nvptype):
 
 
 class Connection(core.CoreLib):
-
-    def __init__(self, uri, poolmanager=None, username='admin',
-                 password='admin'):
-        super(Connection, self).__init__(uri, poolmanager, username, password)
-
     def nvp_function(self):
         entity = NVPFunction(self)
         return entity
@@ -114,29 +110,48 @@ class Connection(core.CoreLib):
         return entity
 
     def handle_status_code(self, code, iserror=False, message=None):
+        exception = None
+
         if code == 400 or code == 500:
-            raise NVPException(message, code)
+            exception = NVPException
+
         elif code == 403:
-            raise Forbidden(message, code)
+            exception = Forbidden
+
         elif code == 404:
-            raise ResourceNotFound(message, code)
+            exception = ResourceNotFound
+
         elif code == 408:
-            raise RequestTimeout(message, code)
+            exception = RequestTimeout
+
         elif code == 409:
-            raise Conflict(message, code)
+            exception = Conflict
+
         elif code == 503:
-            raise ServiceUnavailable(message, code)
+            exception = ServiceUnavailable
+
         elif iserror:
-            raise NVPException("Unhandled error occurred", code)
+            exception = NVPException
+            message = "Unhandled error occurred"
+
+        if exception is not None:
+            raise exception(message)
 
     def _action(self, entity, method, resource):
         """Will inject generation ID into the JSON result object if it exists
         """
+        # Changes to get the elapsed time
+        starttime = time.time()
         try:
             r = super(Connection, self)._action(entity, method, resource)
         except core.AICException as e:
+            logger.exception('AICException')
             self.handle_status_code(e.code, iserror=True, message=e.message)
-
+        endtime = time.time() - starttime
+        logger.info("(%s @ %s):%s:Elapsed time %.3f" % (method,
+                                                        resource,
+                                                        entity._unroll(),
+                                                        endtime))
         self.handle_status_code(r.status)
         responselength = 0
         generationid = None
