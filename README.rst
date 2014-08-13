@@ -6,8 +6,8 @@ A declarative system to consume the NVP api.
 
 Current Build Status
 ====================
-.. image:: https://api.travis-ci.org/jkoelker/aiclib.png
-    :target: https://travis-ci.org/jkoelker/aiclib
+.. image:: https://api.travis-ci.org/rackerlabs/aiclib.png
+    :target: https://travis-ci.org/rackerlabs/aiclib
 
 
 Use of AIC wrapper lib
