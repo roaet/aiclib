@@ -1,10 +1,18 @@
 language: python
 python:
-  - "2.7"
-  - "2.6"
+- '2.7'
+- '2.6'
 install:
-  - pip install flake8 . --use-mirrors
+- pip install flake8 . --use-mirrors
 before_script:
-  - "flake8 --builtins=_ aiclib"
+- flake8 --builtins=_ aiclib
 script:
-  - echo 1
+- echo 1
+deploy:
+  provider: pypi
+  user: jkoelker
+  password:
+    secure: KRjbSl4C480kigHeqsRe2dKVuavfLeILH1bGs3Jatzu+gn2xfL5ONDL3+JlD//aZYfjh5BI2dsWvIZ/QSD6RzEvQh5/6dNVcxF0kx2d2MTY5i8mjoj64lz2g9TUq2s4iRRIJdxcm6Bkd0xAwLBAb6aAvuQRaYrXDt9VHeKu/oi8=
+  on:
+    tags: true
+    repo: rackerlabs/aiclib
