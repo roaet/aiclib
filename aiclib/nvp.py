@@ -29,7 +29,7 @@ import core
 import nvpentity
 
 logger = logging.getLogger(__name__)
-_version = 'ws.v1'
+_version = 'ws.v2'
 
 
 def grab_uuid_of_type(text_or_dict, nvptype):

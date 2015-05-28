@@ -53,14 +53,11 @@ class CoreLib(object):
         password -- the password to log into the nvp controller
         """
         retries = kwargs.get("retries", 3)
-        redirect = kwargs.get("redirect", True)
         if poolmanager is None:
-            self.conn = urllib3.connection_from_url(uri, retries=retries,
-                                                    redirect=redirect)
+            self.conn = urllib3.connection_from_url(uri, retries=retries)
 
         else:
-            self.conn = poolmanager.connection_from_url(uri, retries=retries,
-                                                        redirect=redirect)
+            self.conn = poolmanager.connection_from_url(uri, retries=retries)
 
         self.connection = Connection(connection=self.conn,
                                      username=username,
@@ -180,9 +177,10 @@ class Connection(object):
 
         self.generationnumber = generationnumber
         open_args = [method]
-        open_kwargs = {'retries': 1, 'timeout': self.timeout,
-                       'headers': self.headers}
+        open_kwargs = {'retries': 3, 'timeout': self.timeout,
+                       'headers': self.headers, 'assert_same_host': False}
 
+        print body
         if body:
             if method in self._encode_url_methods and not is_url_prepared:
                 params = urlencode(body, doseq=True)
@@ -197,7 +195,11 @@ class Connection(object):
         open_args.append(url)
 
         try:
+            print open_args
+            print open_kwargs
             r = self.connection.urlopen(*open_args, **open_kwargs)
+
+            print r.data
 
             if self._iserror(r):
                 try:
